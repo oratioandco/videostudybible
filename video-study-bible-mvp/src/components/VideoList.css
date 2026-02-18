@@ -1,0 +1,10 @@
+/* hover & transition effects - everything structural is inline */
+.vl-chip { cursor: pointer; transition: all .15s; }
+.vl-chip:hover { background: #ede9fe !important; color: #5b21b6 !important; border-color: #c4b5fd !important; }
+.vl-chip.active { background: #667eea !important; color: #fff !important; border-color: #667eea !important; }
+
+.vl-search input { border: none; background: transparent; outline: none; font-size: .84rem; color: #374151; flex: 1; }
+.vl-search input::placeholder { color: #9ca3af; }
+
+.cc-card:hover { box-shadow: 0 4px 16px rgba(102,126,234,.18) !important; transform: translateY(-1px); }
+.cc-play:hover { background: #4f46e5 !important; }

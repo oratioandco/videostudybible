@@ -1,0 +1,143 @@
+.topic-explorer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.te-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.te-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  color: #1f2937;
+  margin: 0;
+}
+
+.demo-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.te-desc {
+  font-size: 0.82rem;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: -0.25rem 0 0;
+}
+
+.topic-explorer .empty {
+  color: #6b7280;
+  text-align: center;
+  padding: 2rem;
+}
+
+.topic-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.topic-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.topic-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f9fafb;
+  border: none;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-align: left;
+}
+
+.topic-header:hover { background: #f0f4ff; }
+
+.topic-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.topic-name {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.95rem;
+}
+
+.occurrence-count {
+  font-size: 0.72rem;
+  color: #6b7280;
+}
+
+/* Verse chips grid */
+.topic-content {
+  padding: 0.75rem;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+}
+
+.verse-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.verse-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.verse-chip:hover {
+  background: #ede9fe;
+  color: #5b21b6;
+  border-color: #c4b5fd;
+}
+
+.verse-chip.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.chip-count {
+  background: rgba(0,0,0,0.1);
+  border-radius: 3px;
+  padding: 0 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.verse-chip.active .chip-count {
+  background: rgba(255,255,255,0.25);
+}

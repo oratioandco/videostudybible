@@ -1,0 +1,26 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.ruff_cache/
+
+# Node
+video-study-bible-mvp/node_modules/
+video-study-bible-mvp/build/
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Large binary / model files
+*.dat
+*.pt
+*.bin
