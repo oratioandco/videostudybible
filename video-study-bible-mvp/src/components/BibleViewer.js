@@ -1,5 +1,5 @@
 import React from 'react';
-import { Video, PlayCircle } from 'lucide-react';
+import { Video } from 'lucide-react';
 import './BibleViewer.css';
 
 function BibleViewer({ verse, bibleText, studyData, onVerseSelect, onVideoSelect }) {
@@ -10,8 +10,6 @@ function BibleViewer({ verse, bibleText, studyData, onVerseSelect, onVideoSelect
     const verseData = studyData.verses.genesis1[verse] || studyData.verses.all[verse];
     return verseData || [];
   };
-
-  const videos = getVideosForVerse();
 
   // Parse chapter and verses for display
   const getVerseRange = () => {

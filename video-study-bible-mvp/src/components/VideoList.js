@@ -26,10 +26,6 @@ function cleanTitle(raw) {
   return t.trim();
 }
 
-function extractProgramId(raw) {
-  const m = (raw || '').match(/_(\d{5,})(?:\.mp4)?$/i);
-  return m ? m[1] : null;
-}
 
 function dedupeByTimestamp(mentions) {
   const seen = new Set();

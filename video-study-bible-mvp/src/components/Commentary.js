@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Clock, BookOpen, Languages, History, Lightbulb, Cross, Heart, BookMarked } from 'lucide-react';
+import React from 'react';
+import { BookOpen, Languages, History, Lightbulb, Heart, BookMarked } from 'lucide-react';
 import './Commentary.css';
 
 const CATEGORY_CONFIG = {
