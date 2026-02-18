@@ -3,14 +3,6 @@ import { Video } from 'lucide-react';
 import './BibleViewer.css';
 
 function BibleViewer({ verse, bibleText, studyData, onVerseSelect, onVideoSelect }) {
-  // Get videos for current verse
-  const getVideosForVerse = () => {
-    if (!studyData || !verse) return [];
-
-    const verseData = studyData.verses.genesis1[verse] || studyData.verses.all[verse];
-    return verseData || [];
-  };
-
   // Parse chapter and verses for display
   const getVerseRange = () => {
     // For Genesis 1, show verses 1-31
