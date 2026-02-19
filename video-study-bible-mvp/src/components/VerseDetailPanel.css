@@ -18,7 +18,7 @@
   pointer-events: auto;
 }
 
-/* Panel — mobile: bottom sheet */
+/* ── Mobile: bottom sheet ── */
 .verse-detail-panel {
   position: fixed;
   bottom: 0;
@@ -30,11 +30,12 @@
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
   z-index: 99;
-  max-height: 88vh;
+  /* Fixed height — panel never shrinks to content */
+  height: 88vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.6);
-  /* leave room for mini-player bar */
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
@@ -42,17 +43,14 @@
   transform: translateY(0);
 }
 
-/* ── Panel header ── */
+/* ── Panel header — never shrinks ── */
 .panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem 1.25rem 0.875rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  position: sticky;
-  top: 0;
   background: #171717;
-  z-index: 2;
   flex-shrink: 0;
 }
 
@@ -96,7 +94,7 @@
   color: rgba(255, 255, 255, 0.9);
 }
 
-/* ── Verse text + highlight ── */
+/* ── Verse text + highlight — never shrinks ── */
 .panel-verse-section {
   padding: 1rem 1.25rem 0.875rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -155,7 +153,7 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
-/* ── Tabs inside panel ── */
+/* ── Tabs — never shrinks ── */
 .panel-tabs {
   display: flex;
   gap: 0;
@@ -196,24 +194,16 @@
   border-bottom-color: var(--accent-action);
 }
 
-/* ── Panel body (scrollable content) ── */
+/* ── Panel body — fills all remaining space, only thing that scrolls ── */
 .panel-body {
   flex: 1;
+  min-height: 0; /* critical for flex children to respect overflow */
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 1.25rem;
-  /* Ensure body always fills remaining height so panel never collapses */
-  min-height: 0;
 }
 
-/* On desktop/tablet the panel itself is fixed height — body must fill it */
-@media (min-width: 768px) {
-  .verse-detail-panel.is-open {
-    height: calc(100vh - 80px);
-  }
-}
-
-/* Empty state */
+/* ── Empty state ── */
 .panel-empty {
   color: var(--text-disabled);
   font-size: 0.85rem;
@@ -267,28 +257,30 @@
   text-align: right;
 }
 
-/* ── Desktop: right sidebar column ── */
+/* ── Tablet + Desktop: sticky sidebar ── */
 @media (min-width: 768px) {
   .verse-detail-backdrop {
     display: none;
   }
 
   .verse-detail-panel {
+    /* Override mobile fixed positioning */
     position: sticky;
     top: calc(56px + 1.25rem);
     bottom: auto;
     left: auto;
     right: auto;
     transform: none;
-    max-height: calc(100vh - 80px);
+    /* Fixed height — never shrinks to content */
+    height: calc(100vh - 80px);
+    max-height: none;
     border-radius: 14px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: none;
     z-index: auto;
-    /* Collapsed state */
+    /* Collapsed: zero width, invisible */
     width: 0;
     min-width: 0;
-    overflow: hidden;
     opacity: 0;
     pointer-events: none;
     flex-shrink: 0;
@@ -298,14 +290,8 @@
 
   .verse-detail-panel.is-open {
     width: 360px;
-    overflow: hidden; /* panel-body handles scroll */
     opacity: 1;
     pointer-events: auto;
-  }
-
-  /* Body scrolls inside the panel */
-  .verse-detail-panel.is-open .panel-body {
-    overflow-y: auto;
   }
 
   .panel-handle {
@@ -313,21 +299,20 @@
   }
 
   .panel-close-btn {
-    display: flex; /* keep on tablet so user can close */
+    display: flex;
   }
 }
 
 @media (min-width: 1200px) {
   .verse-detail-panel {
     top: calc(56px + 1.5rem);
-    max-height: calc(100vh - 88px);
+    height: calc(100vh - 88px);
   }
 
   .verse-detail-panel.is-open {
     width: 380px;
   }
 
-  /* No close button on desktop — verse de-selection not needed */
   .panel-close-btn {
     display: none;
   }
