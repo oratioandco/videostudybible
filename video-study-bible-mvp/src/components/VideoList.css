@@ -1,10 +1,11 @@
-/* hover & transition effects - everything structural is inline */
+/* hover & transitions */
 .vl-chip { cursor: pointer; transition: all .15s; }
-.vl-chip:hover { background: #ede9fe !important; color: #5b21b6 !important; border-color: #c4b5fd !important; }
-.vl-chip.active { background: #667eea !important; color: #fff !important; border-color: #667eea !important; }
+.vl-chip:hover { background: rgba(59,130,246,0.12) !important; color: #93c5fd !important; border-color: rgba(59,130,246,0.4) !important; }
+.vl-chip.active { background: var(--accent-action) !important; color: #fff !important; border-color: var(--accent-action) !important; }
 
-.vl-search input { border: none; background: transparent; outline: none; font-size: .84rem; color: #374151; flex: 1; }
-.vl-search input::placeholder { color: #9ca3af; }
+.vl-search input { border: none; background: transparent; outline: none; font-size: .84rem; color: var(--text-secondary); flex: 1; }
+.vl-search input::placeholder { color: var(--text-disabled); }
 
-.cc-card:hover { box-shadow: 0 4px 16px rgba(102,126,234,.18) !important; transform: translateY(-1px); }
-.cc-play:hover { background: #4f46e5 !important; }
+.cc-card { transition: box-shadow 0.2s, transform 0.15s; }
+.cc-card:hover { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important; transform: translateY(-1px); }
+.clip-play-btn:hover { background: var(--accent-hover) !important; }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import BibleViewer from './components/BibleViewer';
 import VideoPlayer from './components/VideoPlayer';
@@ -7,18 +7,24 @@ import CrossReferences from './components/CrossReferences';
 import TopicExplorer from './components/TopicExplorer';
 import AIInsights from './components/AIInsights';
 import VideoList from './components/VideoList';
+import VerseDetailPanel from './components/VerseDetailPanel';
 import SearchBar from './components/SearchBar';
 import { Book, Video, MessageSquare, Link2, Hash, Sparkles } from 'lucide-react';
+
+const DEFAULT_TRANSLATION = { id: 'LUT', name: 'Lutherbibel 2017', abbreviation: 'LUT' };
 
 function App() {
   const [studyData, setStudyData] = useState(null);
   const [selectedVerse, setSelectedVerse] = useState('Genesis 1:1');
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [currentVideo, setCurrentVideo] = useState(null);
   const [currentTimestamp, setCurrentTimestamp] = useState(0);
   const [currentClipEnd, setCurrentClipEnd] = useState(null);
   const [activeTab, setActiveTab] = useState('commentary');
   const [bibleText, setBibleText] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedTranslation, setSelectedTranslation] = useState(DEFAULT_TRANSLATION);
+  const sessionUUIDRef = useRef(null);
 
   // Load study Bible data
   useEffect(() => {
@@ -34,60 +40,65 @@ function App() {
       });
   }, []);
 
-  // Load Bible text from Bibel TV API
+  // Load Bible text from Bibel TV API — always Genesis 1, refetch on translation change
   useEffect(() => {
-    if (!selectedVerse) return;
-
-    // Parse verse reference for API call
     const fetchBibleText = async () => {
       try {
-        // TODO: Adjust API call based on correct authentication method
-        const query = selectedVerse.replace(' ', '%20');
-        const response = await fetch(
-          `https://bibelthek-backend.bibeltv.de/search.json?query=${query}`,
-          {
-            headers: {
-              // Try different auth methods - adjust based on what works
-              'X-API-KEY': '9063d9c81d111797641719a3b86651eb',
-              'Authorization': 'Bearer 9063d9c81d111797641719a3b86651eb'
-            }
+        const query = encodeURIComponent('Genesis 1');
+        const bibleAbbr = selectedTranslation.id;
+        let url = `https://bibelthek-backend.bibeltv.de/search.json?query=${query}&bible_abbr=${bibleAbbr}`;
+        if (sessionUUIDRef.current) {
+          url += `&session_uuid=${sessionUUIDRef.current}`;
+        }
+
+        const response = await fetch(url, {
+          headers: {
+            'Key': process.env.REACT_APP_BIBELTHEK_API_KEY,
+            'Accept': 'application/json',
           }
-        );
+        });
 
         if (response.ok) {
           const data = await response.json();
-          setBibleText(data);
+          if (data.session_uuid) {
+            sessionUUIDRef.current = data.session_uuid;
+          }
+          // Parse the verses out of contents_by_bible_abbr
+          const abbr = selectedTranslation.id;
+          const contents = data?.content?.contents_by_bible_abbr?.[abbr]?.contents || [];
+          const verses = contents
+            .filter(item => item.type === 'verse' && item.verse_number)
+            .reduce((acc, item) => {
+              acc[parseInt(item.verse_number, 10)] = item.content;
+              return acc;
+            }, {});
+          setBibleText({ verses });
         } else {
-          // Fallback to mock data for MVP
-          setBibleText({
-            verses: [
-              {
-                verse: 1,
-                text: 'Am Anfang schuf Gott Himmel und Erde.'
-              }
-            ]
-          });
+          setBibleText({ verses: {} });
         }
       } catch (err) {
         console.error('Error fetching Bible text:', err);
-        // Use fallback
-        setBibleText({
-          verses: [{verse: 1, text: 'Am Anfang schuf Gott Himmel und Erde.'}]
-        });
+        setBibleText({ verses: {} });
       }
     };
 
     fetchBibleText();
-  }, [selectedVerse]);
+  }, [selectedTranslation]);
 
   const handleVerseSelect = (verse) => {
     setSelectedVerse(verse);
+    setIsDetailOpen(true);
+  };
+
+  const handleCloseDetail = () => {
+    setIsDetailOpen(false);
   };
 
   const handleVideoSelect = (video, timestamp = 0, endTime = null) => {
     setCurrentVideo(video);
     setCurrentTimestamp(timestamp);
     setCurrentClipEnd(endTime);
+    setIsDetailOpen(false);
   };
 
   const handleTimestampClick = (timestamp) => {
@@ -98,7 +109,7 @@ function App() {
     return (
       <div className="loading">
         <div className="spinner"></div>
-        <p>Video-Studienbibel wird geladen...</p>
+        <p>Video-Studienbibel wird geladen…</p>
       </div>
     );
   }
@@ -108,7 +119,7 @@ function App() {
       <header className="app-header">
         <div className="header-content">
           <div className="logo">
-            <Book size={32} />
+            <Book size={28} />
             <h1>Video-Studienbibel</h1>
             <span className="beta-badge">Beta</span>
           </div>
@@ -121,7 +132,7 @@ function App() {
       </header>
 
       <div className="main-container">
-        {/* Left Panel: Bible Text + Videos */}
+        {/* Left Panel: Bible Text + Video Player */}
         <div className="left-panel">
           <BibleViewer
             verse={selectedVerse}
@@ -129,6 +140,8 @@ function App() {
             studyData={studyData}
             onVerseSelect={handleVerseSelect}
             onVideoSelect={handleVideoSelect}
+            selectedTranslation={selectedTranslation}
+            onTranslationChange={setSelectedTranslation}
           />
 
           {currentVideo && (
@@ -141,42 +154,52 @@ function App() {
           )}
         </div>
 
-        {/* Right Panel: Study Features */}
+        {/* Verse Detail Panel: fixed bottom sheet on mobile, sticky sidebar column on desktop */}
+        <VerseDetailPanel
+          isOpen={isDetailOpen}
+          verseRef={selectedVerse}
+          studyData={studyData}
+          onClose={handleCloseDetail}
+          onVideoSelect={handleVideoSelect}
+          onTimestampClick={handleTimestampClick}
+        />
+
+        {/* Right Panel: Study Features (desktop sidebar / mobile tabs) */}
         <div className="right-panel">
           <div className="tabs">
             <button
               className={`tab ${activeTab === 'commentary' ? 'active' : ''}`}
               onClick={() => setActiveTab('commentary')}
             >
-              <MessageSquare size={16} />
+              <MessageSquare size={15} />
               Kommentar
             </button>
             <button
               className={`tab ${activeTab === 'cross-refs' ? 'active' : ''}`}
               onClick={() => setActiveTab('cross-refs')}
             >
-              <Link2 size={16} />
+              <Link2 size={15} />
               Querverweise
             </button>
             <button
               className={`tab ${activeTab === 'topics' ? 'active' : ''}`}
               onClick={() => setActiveTab('topics')}
             >
-              <Hash size={16} />
+              <Hash size={15} />
               Themen
             </button>
             <button
               className={`tab ${activeTab === 'videos' ? 'active' : ''}`}
               onClick={() => setActiveTab('videos')}
             >
-              <Video size={16} />
+              <Video size={15} />
               Videos
             </button>
             <button
               className={`tab ${activeTab === 'ai-insights' ? 'active' : ''}`}
               onClick={() => setActiveTab('ai-insights')}
             >
-              <Sparkles size={16} />
+              <Sparkles size={15} />
               KI-Einblicke
             </button>
           </div>

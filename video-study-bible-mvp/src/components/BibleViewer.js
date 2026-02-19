@@ -1,30 +1,86 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Video } from 'lucide-react';
 import './BibleViewer.css';
 
-function BibleViewer({ verse, bibleText, studyData, onVerseSelect, onVideoSelect }) {
-  // Parse chapter and verses for display
-  const getVerseRange = () => {
-    // For Genesis 1, show verses 1-31
-    return Array.from({ length: 31 }, (_, i) => i + 1);
+const TRANSLATIONS = [
+  { id: 'LUT', name: 'Lutherbibel 2017', abbreviation: 'LUT' },
+  { id: 'GNB', name: 'Gute Nachricht Bibel', abbreviation: 'GNB' },
+  { id: 'ELB', name: 'Elberfelder Bibel', abbreviation: 'ELB' },
+  { id: 'EU',  name: 'Einheitsübersetzung 2016', abbreviation: 'EÜ' },
+  { id: 'NGÜ', name: 'Neue Genfer Übersetzung', abbreviation: 'NGÜ' },
+  { id: 'SLT', name: 'Schlachter 2000', abbreviation: 'SLT' },
+];
+
+function TranslationSwitcher({ selected, onChange }) {
+  const [open, setOpen] = useState(false);
+
+  const handleSelect = (t) => {
+    onChange(t);
+    setOpen(false);
   };
 
-  const verses = getVerseRange();
+  return (
+    <div className="translation-switcher">
+      <button
+        className="translation-btn"
+        onClick={() => setOpen(o => !o)}
+        aria-label="Übersetzung wählen"
+      >
+        {selected.abbreviation} ▾
+      </button>
+
+      {open && (
+        <>
+          {/* Click-outside overlay */}
+          <div
+            style={{ position: 'fixed', inset: 0, zIndex: 199 }}
+            onClick={() => setOpen(false)}
+          />
+          <ul className="translation-dropdown">
+            {TRANSLATIONS.map(t => (
+              <li
+                key={t.id}
+                className={`translation-option ${t.id === selected.id ? 'selected' : ''}`}
+                onClick={() => handleSelect(t)}
+              >
+                <span>{t.name}</span>
+                <span className="translation-abbr">{t.abbreviation}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+  );
+}
+
+function BibleViewer({ verse, bibleText, studyData, onVerseSelect, onVideoSelect, selectedTranslation, onTranslationChange }) {
+  const verseNums = Array.from({ length: 31 }, (_, i) => i + 1);
+  // Use API-fetched verses when available, fall back to hardcoded LUT text
+  const apiVerses = bibleText?.verses || {};
+  const hasApiText = Object.keys(apiVerses).length > 0;
 
   return (
     <div className="bible-viewer">
       <div className="bible-header">
-        <h2>Genesis 1</h2>
-        <p className="translation">Luther 2017 (via Bibel TV)</p>
+        <div className="bible-header-left">
+          <h2>Genesis 1</h2>
+          <p className="translation">via Bibel TV</p>
+        </div>
+        <TranslationSwitcher
+          selected={selectedTranslation || TRANSLATIONS[0]}
+          onChange={onTranslationChange}
+        />
       </div>
 
       <div className="bible-text">
-        {verses.map(verseNum => {
+        {verseNums.map(verseNum => {
           const verseRef = `Genesis 1:${verseNum}`;
           const altRef = `1. Mose 1:${verseNum}`;
           const isSelected = verse === verseRef;
           const g1 = studyData?.verses?.genesis1 || {};
           const hasVideos = (g1[verseRef]?.length > 0) || (g1[altRef]?.length > 0);
+          const text = hasApiText ? (apiVerses[verseNum] || '') : getVerseText(verseNum);
 
           return (
             <div
@@ -34,19 +90,17 @@ function BibleViewer({ verse, bibleText, studyData, onVerseSelect, onVideoSelect
             >
               <span className="verse-number">{verseNum}</span>
               <span className="verse-text">
-                {/* Fallback text - will be replaced by API */}
-                {getVerseText(verseNum)}
+                {text}
               </span>
               {hasVideos && (
-                <span className="video-indicator" title={`${(g1[verseRef]?.length || 0) + (g1[altRef]?.length || 0)} video(s)`}>
-                  <Video size={14} />
+                <span className="video-indicator" title={`${(g1[verseRef]?.length || 0) + (g1[altRef]?.length || 0)} Video(s)`}>
+                  <Video size={13} />
                 </span>
               )}
             </div>
           );
         })}
       </div>
-
     </div>
   );
 }
@@ -78,16 +132,15 @@ function getVerseText(verseNum) {
     22: 'Und Gott segnete sie und sprach: Seid fruchtbar und mehret euch und erfüllet das Wasser im Meer, und die Vögel sollen sich mehren auf Erden.',
     23: 'Da ward aus Abend und Morgen der fünfte Tag.',
     24: 'Und Gott sprach: Die Erde bringe hervor lebendiges Getier, ein jedes nach seiner Art: Vieh, Gewürm und Tiere des Feldes, ein jedes nach seiner Art. Und es geschah so.',
-    25: 'Und Gott machte die Tiere des Feldes, ein jedes nach seiner Art, und das Vieh nach seiner Art und alles Gewürm des Erdbodens nach seiner Art. Und Gott sah, dass es gut war.',
-    26: 'Und Gott sprach: Lasset uns Menschen machen, ein Bild, das uns gleich sei, die da herrschen über die Fische im Meer und über die Vögel unter dem Himmel und über das Vieh und über die ganze Erde und über alles Gewürm, das auf Erden kriecht.',
+    25: 'Und Gott machte die Tiere des Feldes, ein jedes nach seiner Art, und das Vieh nach seiner Art und alles Gewürm auf Erden nach seiner Art. Und Gott sah, dass es gut war.',
+    26: 'Und Gott sprach: Lasset uns Menschen machen, ein Bild, das uns gleich sei, die da herrschen über die Fische im Meer und über die Vögel unter dem Himmel und über das Vieh und über alle Tiere des Feldes und über alles Gewürm, das auf Erden kriecht.',
     27: 'Und Gott schuf den Menschen zu seinem Bilde, zum Bilde Gottes schuf er ihn; und schuf sie als Mann und Frau.',
     28: 'Und Gott segnete sie und sprach zu ihnen: Seid fruchtbar und mehret euch und füllet die Erde und machet sie euch untertan und herrschet über die Fische im Meer und über die Vögel unter dem Himmel und über alles Getier, das auf Erden kriecht.',
-    29: 'Und Gott sprach: Sehet da, ich habe euch gegeben alle Pflanzen, die Samen bringen, auf der ganzen Erde, und alle Bäume mit Früchten, die Samen bringen, zu eurer Speise.',
-    30: 'Aber allen Tieren auf Erden und allen Vögeln unter dem Himmel und allem Gewürm, das auf Erden lebt, habe ich alles grüne Kraut zur Nahrung gegeben. Und es geschah so.',
-    31: 'Und Gott sah an alles, was er gemacht hatte, und siehe, es war sehr gut. Da ward aus Abend und Morgen der sechste Tag.'
+    29: 'Und Gott sprach: Seht da, ich habe euch gegeben alle Pflanzen, die Samen bringen, auf der ganzen Erde, und alle Bäume mit Früchten, die Samen bringen, zu eurer Speise.',
+    30: 'Und allen Tieren auf Erden und allen Vögeln unter dem Himmel und allem Gewürm, das auf Erden lebt, habe ich alle grünen Pflanzen zur Nahrung gegeben. Und es geschah so.',
+    31: 'Und Gott sah an alles, was er gemacht hatte, und siehe, es war sehr gut. Da ward aus Abend und Morgen der sechste Tag.',
   };
-
-  return genesis1[verseNum] || `[Vers ${verseNum}]`;
+  return genesis1[verseNum] || '';
 }
 
 export default BibleViewer;
