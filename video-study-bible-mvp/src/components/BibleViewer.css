@@ -9,41 +9,34 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   text-align: center;
 }
 
-.bible-header-left {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.375rem;
-}
-
 /* Large chapter title */
-.bible-header-left h2 {
+.bible-header h2 {
   font-size: 3rem;
-  font-weight: 300;
+  font-weight: 700;
   margin: 0;
   color: var(--text-primary);
-  letter-spacing: 0.01em;
-  font-family: var(--font-bible);
+  letter-spacing: 0.04em;
+  font-family: var(--font-heading);
   line-height: 1.05;
 }
 
 @media (min-width: 768px) {
-  .bible-header-left h2 {
+  .bible-header h2 {
     font-size: 3.5rem;
   }
 }
 
-/* Translation name subtitle */
+/* Translation full name — tiny subtitle below pill */
 .translation {
-  font-size: 0.68rem;
-  color: var(--text-muted);
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 0.7rem;
+  color: var(--text-disabled);
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  margin: 0;
 }
 
 .bible-loading-hint {
@@ -66,16 +59,19 @@
 }
 
 .translation-btn {
-  background: var(--bg-hover);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-surface);
   border: 1px solid var(--bg-border);
   color: var(--text-secondary);
-  border-radius: 8px;
-  padding: 5px 13px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  border-radius: 9999px;
+  padding: 6px 16px;
+  font-size: 0.875rem;
+  font-weight: 400;
   cursor: pointer;
-  transition: all 0.15s;
-  letter-spacing: 0.05em;
+  transition: all 0.2s;
+  letter-spacing: 0;
 }
 
 .translation-btn:hover {
@@ -85,24 +81,26 @@
 
 .translation-dropdown {
   position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
   background: var(--bg-dropdown);
   border: 1px solid var(--bg-border);
-  border-radius: 16px;
-  min-width: 240px;
+  border-radius: 20px;
+  min-width: 260px;
   z-index: 200;
   list-style: none;
-  padding: 6px 0;
+  padding: 8px 0;
   margin: 0;
-  box-shadow: 0 8px 40px var(--overlay-medium);
+  box-shadow: 0 12px 48px var(--overlay-medium);
 }
 
 .translation-option {
-  padding: 10px 16px;
+  padding: 12px 16px;
   cursor: pointer;
   color: var(--text-secondary);
   font-size: 0.875rem;
+  font-weight: 400;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -111,7 +109,7 @@
 }
 
 .translation-option:hover {
-  background: var(--bg-hover);
+  background: var(--bg-surface);
   color: var(--text-primary);
 }
 
@@ -119,16 +117,21 @@
   color: var(--accent-action);
 }
 
+.translation-name {
+  font-weight: 400;
+}
+
 .translation-abbr {
-  font-size: 0.68rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 300;
   color: var(--text-muted);
-  font-family: monospace;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
 }
 
 .translation-option.selected .translation-abbr {
   color: var(--accent-action);
+  opacity: 0.7;
 }
 
 /* ── Verse Text Area ── */

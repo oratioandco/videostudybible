@@ -1,3 +1,31 @@
+/* ── Custom Fonts ── */
+@font-face {
+  font-family: 'Codec Cold Heavy';
+  src: url('./fonts/CodecColdHeavy-Bold.woff2') format('woff2'),
+       url('./fonts/CodecColdHeavy-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Diagramm';
+  src: url('./fonts/Diagramm-Regular.woff2') format('woff2'),
+       url('./fonts/Diagramm-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Diagramm';
+  src: url('./fonts/Diagramm-Bold.woff2') format('woff2'),
+       url('./fonts/Diagramm-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ── Design Tokens — Light mode (default) ── */
 :root {
   /* Backgrounds — stone/warm palette matching ProtoBible bible reader */
@@ -24,6 +52,8 @@
 
   /* Fonts */
   --font-bible: 'Georgia', 'Cambria', 'Times New Roman', Times, serif;
+  --font-ui: 'Diagramm', 'Helvetica Neue', system-ui, sans-serif;
+  --font-heading: 'Codec Cold Heavy', 'Arial Black', system-ui, sans-serif;
 
   /* Layout */
   --detail-panel-width: 380px;
@@ -78,9 +108,7 @@ html.sepia {
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: var(--font-ui);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: var(--bg-primary);

@@ -26,12 +26,17 @@ function TranslationSwitcher({ selected, onChange }) {
         onClick={() => setOpen(o => !o)}
         aria-label="Übersetzung wählen"
       >
-        {selected.abbreviation} ▾
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5} style={{ flexShrink: 0, opacity: 0.7 }}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+        <span>Genesis 1 · {selected.abbreviation}</span>
+        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} style={{ flexShrink: 0, opacity: 0.5 }}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
       </button>
 
       {open && (
         <>
-          {/* Click-outside overlay */}
           <div
             style={{ position: 'fixed', inset: 0, zIndex: 199 }}
             onClick={() => setOpen(false)}
@@ -43,7 +48,7 @@ function TranslationSwitcher({ selected, onChange }) {
                 className={`translation-option ${t.id === selected.id ? 'selected' : ''}`}
                 onClick={() => handleSelect(t)}
               >
-                <span>{t.name}</span>
+                <span className="translation-name">{t.name}</span>
                 <span className="translation-abbr">{t.abbreviation}</span>
               </li>
             ))}
@@ -56,25 +61,23 @@ function TranslationSwitcher({ selected, onChange }) {
 
 function BibleViewer({ verse, bibleText, studyData, onVerseSelect, onVideoSelect, selectedTranslation, onTranslationChange }) {
   const verseNums = Array.from({ length: 31 }, (_, i) => i + 1);
-  // Use API-fetched verses when available, fall back to hardcoded LUT text
   const apiVerses = bibleText?.verses || {};
   const hasApiText = Object.keys(apiVerses).length > 0;
+  const currentTranslation = selectedTranslation || TRANSLATIONS[0];
 
   return (
     <div className="bible-viewer">
       <div className="bible-header">
-        <div className="bible-header-left">
-          <h2>Genesis 1</h2>
-          {!hasApiText ? (
-            <p className="bible-loading-hint">Wird geladen…</p>
-          ) : (
-            <p className="translation">{(selectedTranslation || TRANSLATIONS[0]).name}</p>
-          )}
-        </div>
+        <h2>Genesis 1</h2>
         <TranslationSwitcher
-          selected={selectedTranslation || TRANSLATIONS[0]}
+          selected={currentTranslation}
           onChange={onTranslationChange}
         />
+        {!hasApiText ? (
+          <p className="bible-loading-hint">Wird geladen…</p>
+        ) : (
+          <p className="translation">{currentTranslation.name}</p>
+        )}
       </div>
 
       <div className="bible-text">
