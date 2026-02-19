@@ -85,7 +85,8 @@ function App() {
     };
 
     fetchBibleText();
-  }, [selectedTranslation]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTranslation.id]);
 
   const handleVerseSelect = (verse) => {
     setSelectedVerse(verse);
