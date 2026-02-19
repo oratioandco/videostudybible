@@ -1,8 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import VideoList from './VideoList';
+import Commentary from './Commentary';
+import CrossReferences from './CrossReferences';
+import TopicExplorer from './TopicExplorer';
+import AIInsights from './AIInsights';
+import { Video, MessageSquare, Link2, Hash, Sparkles, X } from 'lucide-react';
 import './VerseDetailPanel.css';
 
-function VerseDetailPanel({ isOpen, verseRef, studyData, onClose, onVideoSelect, onTimestampClick }) {
+const HIGHLIGHT_COLORS = [
+  { id: 'yellow', label: 'Gelb', color: '#fbbf24' },
+  { id: 'green',  label: 'Grün', color: '#34d399' },
+  { id: 'blue',   label: 'Blau', color: '#60a5fa' },
+  { id: 'purple', label: 'Lila', color: '#a78bfa' },
+];
+
+const TABS = [
+  { id: 'videos',      icon: Video,         label: 'Videos'      },
+  { id: 'commentary',  icon: MessageSquare, label: 'Kommentar'   },
+  { id: 'cross-refs',  icon: Link2,         label: 'Querverweise'},
+  { id: 'topics',      icon: Hash,          label: 'Themen'      },
+  { id: 'ai',          icon: Sparkles,      label: 'KI-Chat'     },
+];
+
+function VerseDetailPanel({
+  isOpen,
+  verseRef,
+  verseText,
+  studyData,
+  onClose,
+  onVideoSelect,
+  onTimestampClick,
+  onVerseSelect,
+}) {
+  const [activeTab, setActiveTab] = useState('videos');
+  const [highlightColor, setHighlightColor] = useState(null);
+
+  const handleHighlight = (colorId) => {
+    setHighlightColor(prev => prev === colorId ? null : colorId);
+  };
+
+  const activeHighlight = HIGHLIGHT_COLORS.find(c => c.id === highlightColor);
+
   return (
     <>
       {/* Backdrop (mobile only) */}
@@ -15,9 +53,10 @@ function VerseDetailPanel({ isOpen, verseRef, studyData, onClose, onVideoSelect,
       {/* Panel */}
       <div
         className={`verse-detail-panel ${isOpen ? 'is-open' : ''}`}
-        role="region"
+        role="complementary"
         aria-label="Vers-Details"
       >
+        {/* ── Header ── */}
         <div className="panel-header">
           <div className="panel-handle" />
           <span className="panel-verse-ref">{verseRef}</span>
@@ -26,17 +65,93 @@ function VerseDetailPanel({ isOpen, verseRef, studyData, onClose, onVideoSelect,
             onClick={onClose}
             aria-label="Schließen"
           >
-            ×
+            <X size={16} />
           </button>
         </div>
 
+        {/* ── Verse text + highlight ── */}
+        {verseText && (
+          <div
+            className="panel-verse-section"
+            style={activeHighlight ? { background: activeHighlight.color + '22', borderColor: activeHighlight.color + '55' } : {}}
+          >
+            <p className="panel-verse-text">{verseText}</p>
+            <div className="panel-highlight-row">
+              {HIGHLIGHT_COLORS.map(c => (
+                <button
+                  key={c.id}
+                  className={`highlight-dot ${highlightColor === c.id ? 'active' : ''}`}
+                  style={{ background: c.color }}
+                  onClick={() => handleHighlight(c.id)}
+                  aria-label={`Markierung: ${c.label}`}
+                  title={c.label}
+                />
+              ))}
+              {highlightColor && (
+                <button
+                  className="highlight-clear"
+                  onClick={() => setHighlightColor(null)}
+                  aria-label="Markierung entfernen"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── Tabs ── */}
+        <div className="panel-tabs">
+          {TABS.map(({ id, icon: Icon, label }) => (
+            <button
+              key={id}
+              className={`panel-tab ${activeTab === id ? 'active' : ''}`}
+              onClick={() => setActiveTab(id)}
+            >
+              <Icon size={13} />
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* ── Tab content ── */}
         <div className="panel-body">
-          <VideoList
-            verse={verseRef}
-            studyData={studyData}
-            onVideoSelect={onVideoSelect}
-            onTimestampClick={onTimestampClick}
-          />
+          {activeTab === 'videos' && (
+            <VideoList
+              verse={verseRef}
+              studyData={studyData}
+              onVideoSelect={onVideoSelect}
+              onTimestampClick={onTimestampClick}
+            />
+          )}
+          {activeTab === 'commentary' && (
+            <Commentary
+              verse={verseRef}
+              studyData={studyData}
+              onTimestampClick={onTimestampClick}
+              onVideoSelect={onVideoSelect}
+            />
+          )}
+          {activeTab === 'cross-refs' && (
+            <CrossReferences
+              verse={verseRef}
+              studyData={studyData}
+              onVerseSelect={onVerseSelect}
+            />
+          )}
+          {activeTab === 'topics' && (
+            <TopicExplorer
+              verse={verseRef}
+              studyData={studyData}
+              onVerseSelect={onVerseSelect}
+            />
+          )}
+          {activeTab === 'ai' && (
+            <AIInsights
+              verse={verseRef}
+              studyData={studyData}
+            />
+          )}
         </div>
       </div>
     </>

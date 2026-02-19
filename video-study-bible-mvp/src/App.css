@@ -15,7 +15,7 @@
 .app-header {
   background: var(--bg-elevated);
   color: var(--text-primary);
-  padding: 1rem 2rem;
+  padding: 0.875rem 1.5rem;
   border-bottom: 1px solid var(--bg-border);
   position: sticky;
   top: 0;
@@ -34,12 +34,13 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 0.875rem;
+  gap: 0.75rem;
   color: var(--text-primary);
+  flex-shrink: 0;
 }
 
 .logo h1 {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -48,105 +49,136 @@
   background: rgba(59, 130, 246, 0.2);
   color: var(--accent-action);
   border: 1px solid rgba(59, 130, 246, 0.35);
-  padding: 0.2rem 0.625rem;
-  border-radius: 12px;
-  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  font-size: 0.65rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-/* ── Main Layout ── */
+/* ── Main 3-column layout ── */
 .main-container {
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 1.5rem 1.5rem;
+  padding: 1.25rem 1rem 6rem; /* bottom padding for mini-player */
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
   flex: 1;
   width: 100%;
 }
 
-@media (min-width: 1024px) {
-  .main-container {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 1.5rem;
-    padding: 1.5rem 2rem;
-  }
-
-  .left-panel {
-    flex: 1;
-    min-width: 0;
-    max-width: 700px;
-  }
-
-  .right-panel {
-    width: var(--detail-panel-width);
-    flex-shrink: 0;
-    position: sticky;
-    top: calc(64px + 1.5rem);
-    max-height: calc(100vh - 80px);
-    overflow-y: auto;
-  }
-}
-
-.left-panel,
-.right-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-/* ── Tabs ── */
-.tabs {
-  display: flex;
-  gap: 0.25rem;
-  border-bottom: 1px solid var(--bg-border);
-  padding: 0 0.5rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.tabs::-webkit-scrollbar {
+/* Video column — hidden on mobile, shown on desktop */
+.video-column {
   display: none;
 }
 
-.tab {
+/* Bible column — full width on mobile */
+.bible-column {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Tablet: bible + detail side by side ── */
+@media (min-width: 768px) {
+  .main-container {
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 1.5rem 1.5rem 2rem;
+  }
+
+  .bible-column {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* ── Desktop: full 3-column ── */
+@media (min-width: 1200px) {
+  .main-container {
+    padding: 1.5rem 2rem 2rem;
+    gap: 1.5rem;
+  }
+
+  /* Video column: fixed width, shown when active or as placeholder */
+  .video-column {
+    display: flex;
+    flex-direction: column;
+    width: 340px;
+    flex-shrink: 0;
+    position: sticky;
+    top: calc(56px + 1.5rem);
+    max-height: calc(100vh - 80px);
+  }
+
+  /* Bible column: uncapped, fills middle */
+  .bible-column {
+    flex: 1;
+    min-width: 0;
+    max-width: 680px;
+  }
+}
+
+/* Video placeholder (desktop, no video selected) */
+.video-placeholder {
+  background: var(--bg-elevated);
+  border: 1px solid var(--bg-border);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 2rem;
+  color: var(--text-disabled);
+  text-align: center;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  aspect-ratio: 16/9;
+}
+
+.placeholder-icon {
+  opacity: 0.25;
+}
+
+/* ── Mini-player bar (mobile + tablet) ── */
+.mini-player-bar {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  background: none;
-  border: none;
-  padding: 0.75rem 0.875rem;
-  cursor: pointer;
-  font-size: 0.82rem;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--bg-border);
+  padding: 0.625rem 1rem;
+  z-index: 90;
+  gap: 0.75rem;
+}
+
+.mini-player-icon {
+  display: flex;
+  align-items: center;
+  color: var(--accent-action);
+  flex-shrink: 0;
+}
+
+.mini-player-title {
+  font-size: 0.8rem;
   font-weight: 500;
-  color: var(--text-muted);
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.tab:hover {
   color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 
-.tab.active {
-  color: var(--text-primary);
-  border-bottom-color: var(--accent-action);
-}
-
-.tab-content {
-  background: #171717;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  padding: 1.25rem;
-  min-height: 400px;
-  max-height: calc(100vh - 200px);
-  overflow-y: auto;
+/* Hide mini-player bar on desktop (video lives in the left column) */
+@media (min-width: 1200px) {
+  .mini-player-bar {
+    display: none;
+  }
 }
 
 /* ── Loading ── */
@@ -159,11 +191,12 @@
   gap: 1rem;
   background: var(--bg-primary);
   color: var(--text-muted);
+  font-size: 0.9rem;
 }
 
 .spinner {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border: 3px solid rgba(255, 255, 255, 0.1);
   border-top-color: var(--accent-action);
   border-radius: 50%;
@@ -174,40 +207,19 @@
   to { transform: rotate(360deg); }
 }
 
-/* ── AI placeholder ── */
-.ai-insights {
-  padding: 2rem;
-  text-align: center;
-}
-
-.ai-insights h3 {
-  margin-bottom: 1rem;
-  color: var(--accent-action);
-}
-
-.coming-soon {
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-/* ── Responsive ── */
-@media (max-width: 768px) {
+/* ── Mobile header ── */
+@media (max-width: 767px) {
   .app-header {
-    padding: 0.875rem 1rem;
+    padding: 0.75rem 1rem;
   }
 
   .header-content {
     flex-direction: column;
     align-items: stretch;
-    gap: 0.75rem;
+    gap: 0.625rem;
   }
 
-  .main-container {
-    padding: 1rem;
-  }
-
-  .tab {
-    font-size: 0.78rem;
-    padding: 0.625rem 0.625rem;
+  .logo h1 {
+    font-size: 1rem;
   }
 }

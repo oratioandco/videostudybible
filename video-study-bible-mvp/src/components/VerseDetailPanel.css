@@ -1,14 +1,14 @@
 /* ── Verse Detail Panel ── */
 
-/* Backdrop (mobile only) */
+/* Backdrop — mobile only */
 .verse-detail-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6); /* dark:bg-black/60 */
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease;
   pointer-events: none;
   z-index: 98;
 }
@@ -24,131 +24,247 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: #171717; /* dark:bg-neutral-900 */
+  background: #171717;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 28px 28px 0 0; /* rounded-3xl top */
+  border-radius: 24px 24px 0 0;
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
   z-index: 99;
-  max-height: 90vh;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  max-height: 88vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.6);
+  /* leave room for mini-player bar */
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 .verse-detail-panel.is-open {
   transform: translateY(0);
 }
 
-/* Panel header */
+/* ── Panel header ── */
 .panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.5rem 1.5rem 1rem;
+  padding: 1.25rem 1.25rem 0.875rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   position: sticky;
   top: 0;
   background: #171717;
-  z-index: 1;
+  z-index: 2;
   flex-shrink: 0;
 }
 
-/* Drag handle (mobile) */
 .panel-handle {
   position: absolute;
-  top: 10px;
+  top: 8px;
   left: 50%;
   transform: translateX(-50%);
-  width: 36px;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.12);
+  width: 32px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 2px;
 }
 
 .panel-verse-ref {
-  font-size: 0.875rem;
-  font-weight: 300;
-  color: rgba(214, 211, 209, 0.6); /* stone-300 @ 60% */
-  letter-spacing: 0.05em;
-  padding-top: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(214, 211, 209, 0.5);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding-top: 4px;
 }
 
 .panel-close-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: rgba(255, 255, 255, 0.06);
+  width: 30px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.07);
   border: none;
   border-radius: 50%;
   color: rgba(214, 211, 209, 0.5);
-  font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.15s;
-  line-height: 1;
   flex-shrink: 0;
 }
 
 .panel-close-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.13);
   color: rgba(255, 255, 255, 0.9);
 }
 
-/* Panel body */
-.panel-body {
-  padding: 1.25rem 1.5rem 2.5rem;
-  flex: 1;
+/* ── Verse text + highlight ── */
+.panel-verse-section {
+  padding: 1rem 1.25rem 0.875rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-left: 3px solid transparent;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
 }
 
-/* ── Desktop: sticky sidebar column ── */
-@media (min-width: 1024px) {
+.panel-verse-text {
+  font-family: var(--font-bible);
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #e7e5e4;
+  font-weight: 300;
+  margin-bottom: 0.75rem;
+}
+
+.panel-highlight-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.highlight-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.highlight-dot:hover {
+  transform: scale(1.2);
+}
+
+.highlight-dot.active {
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+}
+
+.highlight-clear {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.highlight-clear:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ── Tabs inside panel ── */
+.panel-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+  padding: 0 0.5rem;
+}
+
+.panel-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.panel-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: none;
+  padding: 0.65rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(168, 162, 158, 0.6);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.panel-tab:hover {
+  color: rgba(231, 229, 228, 0.8);
+}
+
+.panel-tab.active {
+  color: #e7e5e4;
+  border-bottom-color: var(--accent-action);
+}
+
+/* ── Panel body (scrollable content) ── */
+.panel-body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1.25rem;
+}
+
+/* ── Desktop: right sidebar column ── */
+@media (min-width: 768px) {
   .verse-detail-backdrop {
     display: none;
   }
 
-  /* Hidden by default on desktop — collapses to zero width */
   .verse-detail-panel {
     position: sticky;
-    top: calc(64px + 1.5rem);
+    top: calc(56px + 1.25rem);
     bottom: auto;
     left: auto;
     right: auto;
     transform: none;
-    transition: width 0.3s cubic-bezier(0.32, 0.72, 0, 1),
-                opacity 0.3s ease;
     max-height: calc(100vh - 80px);
-    overflow-y: auto;
-    border-radius: 16px;
+    border-radius: 14px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: none;
     z-index: auto;
-    /* Hidden state */
+    /* Collapsed state */
     width: 0;
     min-width: 0;
     overflow: hidden;
     opacity: 0;
     pointer-events: none;
     flex-shrink: 0;
+    transition: width 0.3s cubic-bezier(0.32, 0.72, 0, 1),
+                opacity 0.25s ease;
   }
 
-  /* Visible when open */
   .verse-detail-panel.is-open {
-    transform: none;
-    width: var(--detail-panel-width);
-    overflow-y: auto;
-    overflow-x: hidden;
+    width: 360px;
+    overflow: hidden; /* panel-body handles scroll */
     opacity: 1;
     pointer-events: auto;
+  }
+
+  /* Body scrolls inside the panel */
+  .verse-detail-panel.is-open .panel-body {
+    overflow-y: auto;
   }
 
   .panel-handle {
     display: none;
   }
 
+  .panel-close-btn {
+    display: flex; /* keep on tablet so user can close */
+  }
+}
+
+@media (min-width: 1200px) {
+  .verse-detail-panel {
+    top: calc(56px + 1.5rem);
+    max-height: calc(100vh - 88px);
+  }
+
+  .verse-detail-panel.is-open {
+    width: 380px;
+  }
+
+  /* No close button on desktop — verse de-selection not needed */
   .panel-close-btn {
     display: none;
   }

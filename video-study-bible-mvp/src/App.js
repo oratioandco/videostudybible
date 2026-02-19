@@ -2,25 +2,20 @@ import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import BibleViewer from './components/BibleViewer';
 import VideoPlayer from './components/VideoPlayer';
-import Commentary from './components/Commentary';
-import CrossReferences from './components/CrossReferences';
-import TopicExplorer from './components/TopicExplorer';
-import AIInsights from './components/AIInsights';
-import VideoList from './components/VideoList';
 import VerseDetailPanel from './components/VerseDetailPanel';
 import SearchBar from './components/SearchBar';
-import { Book, Video, MessageSquare, Link2, Hash, Sparkles } from 'lucide-react';
+import { Book, Play } from 'lucide-react';
 
 const DEFAULT_TRANSLATION = { id: 'LUT', name: 'Lutherbibel 2017', abbreviation: 'LUT' };
 
 function App() {
   const [studyData, setStudyData] = useState(null);
-  const [selectedVerse, setSelectedVerse] = useState('Genesis 1:1');
+  const [selectedVerse, setSelectedVerse] = useState(null);
+  const [selectedVerseText, setSelectedVerseText] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [currentVideo, setCurrentVideo] = useState(null);
   const [currentTimestamp, setCurrentTimestamp] = useState(0);
   const [currentClipEnd, setCurrentClipEnd] = useState(null);
-  const [activeTab, setActiveTab] = useState('commentary');
   const [bibleText, setBibleText] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedTranslation, setSelectedTranslation] = useState(DEFAULT_TRANSLATION);
@@ -40,13 +35,13 @@ function App() {
       });
   }, []);
 
-  // Load Bible text from Bibel TV API — always Genesis 1, refetch on translation change
+  // Load Bible text from Bibel TV API via CRA proxy — refetch on translation change
   useEffect(() => {
     const fetchBibleText = async () => {
       try {
         const query = encodeURIComponent('Genesis 1');
         const bibleAbbr = selectedTranslation.id;
-        let url = `https://bibelthek-backend.bibeltv.de/search.json?query=${query}&bible_abbr=${bibleAbbr}`;
+        let url = `/search.json?query=${query}&bible_abbr=${bibleAbbr}`;
         if (sessionUUIDRef.current) {
           url += `&session_uuid=${sessionUUIDRef.current}`;
         }
@@ -63,8 +58,7 @@ function App() {
           if (data.session_uuid) {
             sessionUUIDRef.current = data.session_uuid;
           }
-          // Parse the verses out of contents_by_bible_abbr
-          // The API returns one key in this object (its own internal abbr), take the first
+          // API returns its own internal abbr key — take the first one
           const cba = data?.content?.contents_by_bible_abbr || {};
           const firstKey = Object.keys(cba)[0];
           const contents = firstKey ? (cba[firstKey]?.contents || []) : [];
@@ -88,8 +82,9 @@ function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTranslation.id]);
 
-  const handleVerseSelect = (verse) => {
+  const handleVerseSelect = (verse, verseText) => {
     setSelectedVerse(verse);
+    setSelectedVerseText(verseText || null);
     setIsDetailOpen(true);
   };
 
@@ -101,7 +96,6 @@ function App() {
     setCurrentVideo(video);
     setCurrentTimestamp(timestamp);
     setCurrentClipEnd(endTime);
-    setIsDetailOpen(false);
   };
 
   const handleTimestampClick = (timestamp) => {
@@ -122,7 +116,7 @@ function App() {
       <header className="app-header">
         <div className="header-content">
           <div className="logo">
-            <Book size={28} />
+            <Book size={24} />
             <h1>Video-Studienbibel</h1>
             <span className="beta-badge">Beta</span>
           </div>
@@ -135,8 +129,26 @@ function App() {
       </header>
 
       <div className="main-container">
-        {/* Left Panel: Bible Text + Video Player */}
-        <div className="left-panel">
+
+        {/* Left col: video player (desktop only — collapses when no video) */}
+        <div className={`video-column ${currentVideo ? 'has-video' : ''}`}>
+          {currentVideo ? (
+            <VideoPlayer
+              video={currentVideo}
+              timestamp={currentTimestamp}
+              endTime={currentClipEnd}
+              onTimestampChange={setCurrentTimestamp}
+            />
+          ) : (
+            <div className="video-placeholder">
+              <Book size={32} className="placeholder-icon" />
+              <p>Wähle einen Vers aus,<br />um Videos abzuspielen</p>
+            </div>
+          )}
+        </div>
+
+        {/* Center col: Bible reader */}
+        <div className="bible-column">
           <BibleViewer
             verse={selectedVerse}
             bibleText={bibleText}
@@ -146,111 +158,32 @@ function App() {
             selectedTranslation={selectedTranslation}
             onTranslationChange={setSelectedTranslation}
           />
-
-          {currentVideo && (
-            <VideoPlayer
-              video={currentVideo}
-              timestamp={currentTimestamp}
-              endTime={currentClipEnd}
-              onTimestampChange={setCurrentTimestamp}
-            />
-          )}
         </div>
 
-        {/* Verse Detail Panel: fixed bottom sheet on mobile, sticky sidebar column on desktop */}
+        {/* Right col: Verse detail panel (bottom sheet on mobile, sidebar on desktop) */}
         <VerseDetailPanel
           isOpen={isDetailOpen}
           verseRef={selectedVerse}
+          verseText={selectedVerseText}
           studyData={studyData}
           onClose={handleCloseDetail}
           onVideoSelect={handleVideoSelect}
           onTimestampClick={handleTimestampClick}
+          onVerseSelect={handleVerseSelect}
         />
-
-        {/* Right Panel: Study Features (desktop sidebar / mobile tabs) */}
-        <div className="right-panel">
-          <div className="tabs">
-            <button
-              className={`tab ${activeTab === 'commentary' ? 'active' : ''}`}
-              onClick={() => setActiveTab('commentary')}
-            >
-              <MessageSquare size={15} />
-              Kommentar
-            </button>
-            <button
-              className={`tab ${activeTab === 'cross-refs' ? 'active' : ''}`}
-              onClick={() => setActiveTab('cross-refs')}
-            >
-              <Link2 size={15} />
-              Querverweise
-            </button>
-            <button
-              className={`tab ${activeTab === 'topics' ? 'active' : ''}`}
-              onClick={() => setActiveTab('topics')}
-            >
-              <Hash size={15} />
-              Themen
-            </button>
-            <button
-              className={`tab ${activeTab === 'videos' ? 'active' : ''}`}
-              onClick={() => setActiveTab('videos')}
-            >
-              <Video size={15} />
-              Videos
-            </button>
-            <button
-              className={`tab ${activeTab === 'ai-insights' ? 'active' : ''}`}
-              onClick={() => setActiveTab('ai-insights')}
-            >
-              <Sparkles size={15} />
-              KI-Einblicke
-            </button>
-          </div>
-
-          <div className="tab-content">
-            {activeTab === 'commentary' && (
-              <Commentary
-                verse={selectedVerse}
-                studyData={studyData}
-                onTimestampClick={handleTimestampClick}
-                onVideoSelect={handleVideoSelect}
-              />
-            )}
-
-            {activeTab === 'cross-refs' && (
-              <CrossReferences
-                verse={selectedVerse}
-                studyData={studyData}
-                onVerseSelect={handleVerseSelect}
-              />
-            )}
-
-            {activeTab === 'topics' && (
-              <TopicExplorer
-                verse={selectedVerse}
-                studyData={studyData}
-                onVerseSelect={handleVerseSelect}
-              />
-            )}
-
-            {activeTab === 'videos' && (
-              <VideoList
-                verse={selectedVerse}
-                studyData={studyData}
-                onVideoSelect={handleVideoSelect}
-                onTimestampClick={handleTimestampClick}
-              />
-            )}
-
-            {activeTab === 'ai-insights' && (
-              <AIInsights
-                verse={selectedVerse}
-                studyData={studyData}
-              />
-            )}
-          </div>
-        </div>
       </div>
+
+      {/* Mini-player bar: mobile/tablet indicator when a video is active */}
+      {currentVideo && (
+        <div className="mini-player-bar">
+          <div className="mini-player-icon">
+            <Play size={14} />
+          </div>
+          <span className="mini-player-title">
+            {currentVideo.display_title || currentVideo.title}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

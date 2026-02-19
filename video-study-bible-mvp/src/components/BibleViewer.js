@@ -90,7 +90,7 @@ function BibleViewer({ verse, bibleText, studyData, onVerseSelect, onVideoSelect
             <div
               key={verseNum}
               className={`verse ${isSelected ? 'selected' : ''} ${hasVideos ? 'has-videos' : ''}`}
-              onClick={() => onVerseSelect(verseRef)}
+              onClick={() => onVerseSelect(verseRef, text)}
             >
               <span className="verse-number">{verseNum}</span>
               <span className="verse-text">
