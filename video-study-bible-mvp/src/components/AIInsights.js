@@ -175,17 +175,10 @@ function AIInsights({ verse, studyData }) {
 
       {/* Speaker filter chips */}
       {speakers.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '4px' }}>
+        <div className="speaker-chips">
           <button
+            className={`speaker-chip ${speakerFilter === '' ? 'active' : ''}`}
             onClick={() => setSpeakerFilter('')}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: '5px',
-              padding: '4px 12px', borderRadius: '20px', cursor: 'pointer',
-              fontSize: '.71rem', fontWeight: 500,
-              background: speakerFilter === '' ? '#667eea' : '#f3f4f6',
-              color: speakerFilter === '' ? '#fff' : '#6b7280',
-              border: `1px solid ${speakerFilter === '' ? '#667eea' : '#e5e7eb'}`,
-            }}
           >
             Alle
           </button>
@@ -194,23 +187,15 @@ function AIInsights({ verse, studyData }) {
             return (
               <button
                 key={name}
+                className={`speaker-chip ${active ? 'active' : ''}`}
                 onClick={() => setSpeakerFilter(active ? '' : name)}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '5px',
-                  padding: '3px 10px 3px 4px', borderRadius: '20px', cursor: 'pointer',
-                  fontSize: '.71rem', fontWeight: 500,
-                  background: active ? '#ede9fe' : '#f3f4f6',
-                  color: active ? '#5b21b6' : '#6b7280',
-                  border: `1px solid ${active ? '#c4b5fd' : '#e5e7eb'}`,
-                }}
               >
                 {avatar ? (
                   <img src={avatar} alt={name}
-                    style={{ width: 18, height: 18, borderRadius: '50%', objectFit: 'cover', border: '1px solid #e5e7eb' }}
                     onError={e => { e.target.style.display = 'none'; }}
                   />
                 ) : (
-                  <span style={{ width: 18, height: 18, borderRadius: '50%', background: active ? '#7c3aed' : '#d1d5db', display: 'inline-block', flexShrink: 0 }} />
+                  <span className="speaker-chip-avatar-placeholder" />
                 )}
                 {name}
               </button>
@@ -225,7 +210,7 @@ function AIInsights({ verse, studyData }) {
           {speakerFilter ? ` Für ${speakerFilter} sind noch keine Inhalte indexiert.` : ' Wähle einen Vers mit blauem Symbol.'}
         </p>
       ) : (
-        <>
+        <div className="chat-body">
           <div className="chat-messages">
             {messages.length === 0 && (
               <div className="chat-intro">
@@ -282,7 +267,7 @@ function AIInsights({ verse, studyData }) {
           <p className="rag-note">
             Antworten basieren ausschließlich auf den Video-Lehrinhalten.
           </p>
-        </>
+        </div>
       )}
     </div>
   );
