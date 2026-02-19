@@ -101,6 +101,7 @@ function VerseDetailPanel({
         )}
 
         {/* ── Tabs ── */}
+        {verseRef && (
         <div className="panel-tabs">
           {TABS.map(({ id, icon: Icon, label }) => (
             <button
@@ -113,10 +114,14 @@ function VerseDetailPanel({
             </button>
           ))}
         </div>
+        )}
 
         {/* ── Tab content ── */}
         <div className="panel-body">
-          {activeTab === 'videos' && (
+          {!verseRef && (
+            <p className="panel-empty">Wähle einen Vers aus, um Details zu sehen.</p>
+          )}
+          {verseRef && activeTab === 'videos' && (
             <VideoList
               verse={verseRef}
               studyData={studyData}
@@ -124,7 +129,7 @@ function VerseDetailPanel({
               onTimestampClick={onTimestampClick}
             />
           )}
-          {activeTab === 'commentary' && (
+          {verseRef && activeTab === 'commentary' && (
             <Commentary
               verse={verseRef}
               studyData={studyData}
@@ -132,21 +137,21 @@ function VerseDetailPanel({
               onVideoSelect={onVideoSelect}
             />
           )}
-          {activeTab === 'cross-refs' && (
+          {verseRef && activeTab === 'cross-refs' && (
             <CrossReferences
               verse={verseRef}
               studyData={studyData}
               onVerseSelect={onVerseSelect}
             />
           )}
-          {activeTab === 'topics' && (
+          {verseRef && activeTab === 'topics' && (
             <TopicExplorer
               verse={verseRef}
               studyData={studyData}
               onVerseSelect={onVerseSelect}
             />
           )}
-          {activeTab === 'ai' && (
+          {verseRef && activeTab === 'ai' && (
             <AIInsights
               verse={verseRef}
               studyData={studyData}

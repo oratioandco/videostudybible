@@ -198,7 +198,7 @@ function VideoList({ verse, studyData, onVideoSelect, onTimestampClick }) {
   const [activeCat, setActiveCat] = useState(null);
 
   const g1 = studyData?.verses?.genesis1 || {};
-  const altVerse = verse.replace(/^Genesis (\d+):(\d+)$/, '1. Mose $1:$2');
+  const altVerse = (verse || '').replace(/^Genesis (\d+):(\d+)$/, '1. Mose $1:$2');
   const allVideos = [...(g1[verse] || []), ...(verse !== altVerse ? (g1[altVerse] || []) : [])];
 
   const allClips = buildClips(allVideos);

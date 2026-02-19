@@ -204,6 +204,14 @@
   padding: 1.25rem;
 }
 
+/* Empty state */
+.panel-empty {
+  color: var(--text-disabled);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
 /* ── Desktop: right sidebar column ── */
 @media (min-width: 768px) {
   .verse-detail-backdrop {
