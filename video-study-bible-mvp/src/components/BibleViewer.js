@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Video } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import './BibleViewer.css';
 
 const TRANSLATIONS = [
@@ -65,7 +65,11 @@ function BibleViewer({ verse, bibleText, studyData, onVerseSelect, onVideoSelect
       <div className="bible-header">
         <div className="bible-header-left">
           <h2>Genesis 1</h2>
-          <p className="translation">via Bibel TV</p>
+          {!hasApiText ? (
+            <p className="bible-loading-hint">Wird geladen…</p>
+          ) : (
+            <p className="translation">{(selectedTranslation || TRANSLATIONS[0]).name}</p>
+          )}
         </div>
         <TranslationSwitcher
           selected={selectedTranslation || TRANSLATIONS[0]}
@@ -92,11 +96,9 @@ function BibleViewer({ verse, bibleText, studyData, onVerseSelect, onVideoSelect
               <span className="verse-text">
                 {text}
               </span>
-              {hasVideos && (
-                <span className="video-indicator" title={`${(g1[verseRef]?.length || 0) + (g1[altRef]?.length || 0)} Video(s)`}>
-                  <Video size={13} />
-                </span>
-              )}
+              <span className="verse-chevron" aria-hidden="true">
+                <ChevronRight size={14} />
+              </span>
             </div>
           );
         })}

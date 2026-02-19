@@ -4,11 +4,11 @@
 .verse-detail-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.6); /* dark:bg-black/60 */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   opacity: 0;
-  transition: opacity 0.25s ease;
+  transition: opacity 0.2s ease;
   pointer-events: none;
   z-index: 98;
 }
@@ -18,15 +18,15 @@
   pointer-events: auto;
 }
 
-/* Panel — mobile: fixed bottom sheet */
+/* Panel — mobile: bottom sheet */
 .verse-detail-panel {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  background: #171717;
+  background: #171717; /* dark:bg-neutral-900 */
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px 24px 0 0;
+  border-radius: 28px 28px 0 0; /* rounded-3xl top */
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
   z-index: 99;
@@ -35,6 +35,7 @@
   overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.6);
 }
 
 .verse-detail-panel.is-open {
@@ -46,7 +47,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem 1.5rem 1rem;
+  padding: 1.5rem 1.5rem 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   position: sticky;
   top: 0;
@@ -61,17 +62,17 @@
   top: 10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 40px;
+  width: 36px;
   height: 4px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 2px;
 }
 
 .panel-verse-ref {
   font-size: 0.875rem;
   font-weight: 300;
-  color: rgba(255, 255, 255, 0.5);
-  letter-spacing: 0.04em;
+  color: rgba(214, 211, 209, 0.6); /* stone-300 @ 60% */
+  letter-spacing: 0.05em;
   padding-top: 6px;
 }
 
@@ -79,12 +80,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   background: rgba(255, 255, 255, 0.06);
   border: none;
   border-radius: 50%;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(214, 211, 209, 0.5);
   font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.15s;
@@ -123,6 +124,7 @@
     overflow-y: auto;
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: none;
     z-index: auto;
     /* Hidden state */
     width: 0;

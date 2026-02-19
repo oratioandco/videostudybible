@@ -1,7 +1,7 @@
 /* ── Bible Viewer Container ── */
 .bible-viewer {
   background: var(--bg-elevated);
-  border-radius: 12px;
+  border-radius: 16px;
   border: 1px solid var(--bg-border);
   overflow: hidden;
 }
@@ -11,11 +11,11 @@
   background: var(--bg-elevated);
   border-bottom: 1px solid var(--bg-border);
   color: var(--text-primary);
-  padding: 2rem 1.5rem 1.5rem;
+  padding: 2.5rem 1.5rem 1.75rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
   text-align: center;
   position: relative;
 }
@@ -24,24 +24,43 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.5rem;
 }
 
 .bible-header-left h2 {
-  font-size: 2.5rem;
+  font-size: 3rem;
   font-weight: 300;
   margin: 0;
   color: var(--text-primary);
   letter-spacing: 0.02em;
   font-family: var(--font-bible);
+  line-height: 1.1;
+}
+
+@media (min-width: 768px) {
+  .bible-header-left h2 {
+    font-size: 3.5rem;
+  }
 }
 
 .translation {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
   font-weight: 300;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+.bible-loading-hint {
+  font-size: 0.72rem;
+  color: var(--text-disabled);
+  font-style: italic;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
 }
 
 /* ── Translation Switcher ── */
@@ -49,44 +68,44 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  /* On desktop header, anchor dropdown correctly */
 }
 
 .translation-btn {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--bg-border);
   color: var(--text-secondary);
-  border-radius: 6px;
-  padding: 5px 12px;
-  font-size: 0.8rem;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
 .translation-btn:hover {
   background: rgba(255, 255, 255, 0.12);
   color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 .translation-dropdown {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
-  background: #222222;
-  border: 1px solid var(--bg-border);
-  border-radius: 10px;
-  min-width: 230px;
+  background: #1e1e1e;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  min-width: 240px;
   z-index: 200;
   list-style: none;
-  padding: 4px 0;
+  padding: 6px 0;
   margin: 0;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7);
 }
 
 .translation-option {
-  padding: 9px 16px;
+  padding: 10px 16px;
   cursor: pointer;
   color: var(--text-secondary);
   font-size: 0.875rem;
@@ -107,11 +126,11 @@
 }
 
 .translation-abbr {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: var(--text-muted);
   font-family: monospace;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
 .translation-option.selected .translation-abbr {
@@ -120,79 +139,78 @@
 
 /* ── Verse Text Area ── */
 .bible-text {
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.5rem 1.5rem;
   max-height: calc(100vh - 280px);
   overflow-y: auto;
 }
 
-/* ── Individual Verse ── */
+/* ── Individual Verse — matches ProtoBible VerseDisplay ── */
 .verse {
   display: flex;
   align-items: baseline;
-  gap: 0.875rem;
-  padding: 0.625rem 1rem;
-  border-radius: 12px;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 16px; /* rounded-2xl */
   cursor: pointer;
   transition: background 0.2s;
   position: relative;
+  /* negative horizontal margin so rounded bg extends to edges */
   margin: 1px -0.5rem;
 }
 
 .verse:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.05); /* dark:hover:bg-neutral-800/40 */
+}
+
+.verse:active {
+  transform: scale(0.995);
 }
 
 .verse.selected {
   background: rgba(59, 130, 246, 0.1);
-  border: 1px solid rgba(59, 130, 246, 0.25);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   margin: 0 -0.5rem;
 }
 
-.verse.has-videos {
-  padding-left: 2.25rem;
-}
-
-.verse.has-videos::before {
-  content: '';
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 6px;
-  height: 6px;
-  background: var(--accent-action);
-  border-radius: 50%;
-  opacity: 0.7;
-}
-
-/* ── Verse Number ── */
+/* ── Verse Number — matches text-xs opacity-30 ── */
 .verse-number {
   font-weight: 300;
-  color: var(--text-muted);
-  min-width: 1.75rem;
+  color: rgba(168, 162, 158, 0.5); /* stone-400 @ opacity 0.3 */
+  min-width: 1.5rem;
   font-size: 0.72rem;
   line-height: 1;
   user-select: none;
   flex-shrink: 0;
-  padding-top: 0.3rem;
+  padding-top: 0.35rem;
 }
 
-/* ── Verse Text ── */
+/* ── Verse Text — matches text-lg font-light leading-relaxed dark:text-stone-200 ── */
 .verse-text {
   flex: 1;
   font-family: var(--font-bible);
-  font-size: 1.1rem;
-  line-height: 1.85;
-  color: var(--text-primary);
+  font-size: 1.1rem; /* text-lg equivalent */
+  line-height: 1.8; /* leading-relaxed */
+  color: #e7e5e4; /* dark:text-stone-200 */
   font-weight: 300;
 }
 
-/* ── Video indicator icon ── */
-.video-indicator {
+/* ── Chevron click indicator — shows on hover like ProtoBible ── */
+.verse-chevron {
+  flex-shrink: 0;
+  color: rgba(120, 113, 108, 0.6); /* stone-500 muted */
+  opacity: 0;
+  transition: opacity 0.2s;
+  align-self: center;
+}
+
+.verse:hover .verse-chevron {
+  opacity: 1;
+}
+
+/* ── Video dot indicator — shown via verse-number decoration ── */
+.verse.has-videos .verse-number {
   color: var(--accent-action);
   opacity: 0.7;
-  flex-shrink: 0;
-  margin-left: auto;
 }
 
 /* ── Verse-videos section ── */
@@ -220,7 +238,7 @@
 .video-card {
   background: var(--bg-elevated);
   border: 1px solid var(--bg-border);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 1rem;
   transition: all 0.2s;
 }

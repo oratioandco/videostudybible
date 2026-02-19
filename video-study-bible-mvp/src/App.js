@@ -64,8 +64,10 @@ function App() {
             sessionUUIDRef.current = data.session_uuid;
           }
           // Parse the verses out of contents_by_bible_abbr
-          const abbr = selectedTranslation.id;
-          const contents = data?.content?.contents_by_bible_abbr?.[abbr]?.contents || [];
+          // The API returns one key in this object (its own internal abbr), take the first
+          const cba = data?.content?.contents_by_bible_abbr || {};
+          const firstKey = Object.keys(cba)[0];
+          const contents = firstKey ? (cba[firstKey]?.contents || []) : [];
           const verses = contents
             .filter(item => item.type === 'verse' && item.verse_number)
             .reduce((acc, item) => {
