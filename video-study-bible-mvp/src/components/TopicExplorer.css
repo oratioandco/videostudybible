@@ -15,7 +15,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 1.25rem;
-  color: #1f2937;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -23,8 +23,8 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--accent-action);
   font-size: 0.68rem;
   font-weight: 700;
   padding: 2px 7px;
@@ -35,13 +35,13 @@
 
 .te-desc {
   font-size: 0.82rem;
-  color: #6b7280;
+  color: var(--text-muted);
   line-height: 1.5;
   margin: -0.25rem 0 0;
 }
 
 .topic-explorer .empty {
-  color: #6b7280;
+  color: var(--text-muted);
   text-align: center;
   padding: 2rem;
 }
@@ -53,7 +53,7 @@
 }
 
 .topic-item {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--bg-border);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -63,7 +63,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #f9fafb;
+  background: var(--bg-hover);
   border: none;
   padding: 0.75rem 1rem;
   cursor: pointer;
@@ -71,7 +71,7 @@
   text-align: left;
 }
 
-.topic-header:hover { background: #f0f4ff; }
+.topic-header:hover { background: var(--bg-border); }
 
 .topic-info {
   display: flex;
@@ -81,20 +81,20 @@
 
 .topic-name {
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-primary);
   font-size: 0.95rem;
 }
 
 .occurrence-count {
   font-size: 0.72rem;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 /* Verse chips grid */
 .topic-content {
   padding: 0.75rem;
-  background: white;
-  border-top: 1px solid #e5e7eb;
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--bg-border);
 }
 
 .verse-grid {
@@ -107,9 +107,9 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+  border: 1px solid var(--bg-border);
   padding: 0.3rem 0.6rem;
   border-radius: 6px;
   font-size: 0.78rem;
@@ -119,19 +119,19 @@
 }
 
 .verse-chip:hover {
-  background: #ede9fe;
-  color: #5b21b6;
-  border-color: #c4b5fd;
+  background: rgba(59, 130, 246, 0.08);
+  color: var(--accent-action);
+  border-color: rgba(59, 130, 246, 0.25);
 }
 
 .verse-chip.active {
-  background: #667eea;
-  color: white;
-  border-color: #667eea;
+  background: var(--accent-action);
+  color: #fff;
+  border-color: var(--accent-action);
 }
 
 .chip-count {
-  background: rgba(0,0,0,0.1);
+  background: var(--bg-border);
   border-radius: 3px;
   padding: 0 4px;
   font-size: 0.68rem;
@@ -139,5 +139,5 @@
 }
 
 .verse-chip.active .chip-count {
-  background: rgba(255,255,255,0.25);
+  background: rgba(255, 255, 255, 0.25);
 }
