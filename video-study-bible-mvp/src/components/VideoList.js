@@ -80,18 +80,18 @@ function ClipCard({ clip, onPlayClip }) {
         minHeight: 72,
       }}
     >
-      {/* Thumbnail — fixed 96px wide */}
-      <div style={{ width: 96, flexShrink: 0, position: 'relative', background: 'rgba(255,255,255,0.04)' }}>
+      {/* Thumbnail — fixed 96px wide, stretches to card height */}
+      <div style={{ width: 96, flexShrink: 0, alignSelf: 'stretch', position: 'relative', background: 'var(--bg-surface)', minHeight: 72, overflow: 'hidden' }}>
         {thumb ? (
           <img
             src={thumb}
             alt={title}
             onError={e => { e.target.style.display = 'none'; }}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
           />
         ) : (
-          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Play size={18} color="rgba(255,255,255,0.15)" />
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Play size={18} color="var(--text-disabled)" />
           </div>
         )}
         {/* Duration badge */}
