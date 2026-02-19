@@ -45,6 +45,34 @@
   color: var(--text-primary);
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: var(--bg-hover);
+  border: 1px solid var(--bg-border);
+  border-radius: 50%;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+  background: var(--bg-border);
+  color: var(--text-primary);
+}
+
 .beta-badge {
   background: rgba(59, 130, 246, 0.2);
   color: var(--accent-action);
@@ -197,7 +225,7 @@
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(255, 255, 255, 0.1);
+  border: 3px solid var(--bg-border);
   border-top-color: var(--accent-action);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;

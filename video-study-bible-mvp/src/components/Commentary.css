@@ -33,7 +33,7 @@
   color: var(--text-secondary);
   line-height: 1.7;
   padding: 0.875rem 1rem;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg-hover);
   border-left: 3px solid var(--accent-action);
   border-radius: 0 6px 6px 0;
   margin: 0;
@@ -71,7 +71,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.625rem 0.875rem;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg-hover);
   border-bottom: 1px solid var(--bg-border);
 }
 
@@ -132,7 +132,7 @@
   font-size: 0.8rem;
   color: var(--text-muted);
   padding: 0.625rem 0.875rem;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg-hover);
   border-radius: 6px;
   border: 1px solid var(--bg-border);
   display: flex;

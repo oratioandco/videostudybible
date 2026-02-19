@@ -4,11 +4,16 @@ import BibleViewer from './components/BibleViewer';
 import VideoPlayer from './components/VideoPlayer';
 import VerseDetailPanel from './components/VerseDetailPanel';
 import SearchBar from './components/SearchBar';
-import { Book, Play } from 'lucide-react';
+import { Book, Play, Sun, Moon, BookOpen } from 'lucide-react';
 
 const DEFAULT_TRANSLATION = { id: 'LUT', name: 'Lutherbibel 2017', abbreviation: 'LUT' };
 
 function App() {
+  const [theme, setTheme] = useState(() => {
+    // Default to dark to match previous behaviour; user can toggle
+    const saved = localStorage.getItem('vsb-theme');
+    return saved || 'dark';
+  });
   const [studyData, setStudyData] = useState(null);
   const [selectedVerse, setSelectedVerse] = useState(null);
   const [selectedVerseText, setSelectedVerseText] = useState(null);
@@ -20,6 +25,18 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [selectedTranslation, setSelectedTranslation] = useState(DEFAULT_TRANSLATION);
   const sessionUUIDRef = useRef(null);
+
+  // Apply theme class to <html>
+  useEffect(() => {
+    const el = document.documentElement;
+    el.classList.remove('dark', 'sepia');
+    if (theme !== 'light') el.classList.add(theme);
+    localStorage.setItem('vsb-theme', theme);
+  }, [theme]);
+
+  const cycleTheme = () => {
+    setTheme(t => t === 'dark' ? 'light' : t === 'light' ? 'sepia' : 'dark');
+  };
 
   // Load study Bible data
   useEffect(() => {
@@ -120,11 +137,21 @@ function App() {
             <h1>Video-Studienbibel</h1>
             <span className="beta-badge">Beta</span>
           </div>
-          <SearchBar
-            studyData={studyData}
-            onVerseSelect={handleVerseSelect}
-            onVideoSelect={handleVideoSelect}
-          />
+          <div className="header-right">
+            <SearchBar
+              studyData={studyData}
+              onVerseSelect={handleVerseSelect}
+              onVideoSelect={handleVideoSelect}
+            />
+            <button
+              className="theme-toggle"
+              onClick={cycleTheme}
+              aria-label={`Theme: ${theme}`}
+              title={theme === 'dark' ? 'Helles Design' : theme === 'light' ? 'Sepia' : 'Dunkles Design'}
+            >
+              {theme === 'dark' ? <Sun size={16} /> : theme === 'light' ? <BookOpen size={16} /> : <Moon size={16} />}
+            </button>
+          </div>
         </div>
       </header>
 

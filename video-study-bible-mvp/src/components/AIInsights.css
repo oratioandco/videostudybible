@@ -48,7 +48,7 @@
   font-size: 0.8rem;
   font-family: monospace;
   outline: none;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--bg-hover);
   color: var(--text-primary);
 }
 
@@ -116,7 +116,7 @@
 }
 
 .icon-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--bg-border);
   color: var(--text-primary);
 }
 
@@ -163,7 +163,7 @@
 .example-questions button {
   text-align: left;
   padding: 0.45rem 0.75rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-hover);
   border: 1px solid var(--bg-border);
   border-radius: 6px;
   font-size: 0.78rem;
@@ -212,7 +212,7 @@
 .message-bubble em { font-style: italic; }
 .message-bubble code {
   font-family: monospace;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--overlay-medium);
   border-radius: 3px;
   padding: 0 3px;
   font-size: 0.8em;
@@ -225,7 +225,7 @@
 }
 
 .chat-message.assistant .message-bubble {
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--bg-hover);
   color: var(--text-secondary);
   border-bottom-left-radius: 3px;
 }
@@ -287,7 +287,7 @@
   font-size: 0.875rem;
   outline: none;
   transition: border-color 0.15s;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--bg-hover);
   color: var(--text-primary);
 }
 
@@ -296,7 +296,7 @@
 }
 
 .chat-input-row input:disabled {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-hover);
   color: var(--text-disabled);
 }
 
@@ -324,7 +324,7 @@
 }
 
 .chat-input-row button:disabled {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-hover);
   cursor: not-allowed;
 }
 
