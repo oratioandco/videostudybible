@@ -202,6 +202,15 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 1.25rem;
+  /* Ensure body always fills remaining height so panel never collapses */
+  min-height: 0;
+}
+
+/* On desktop/tablet the panel itself is fixed height — body must fill it */
+@media (min-width: 768px) {
+  .verse-detail-panel.is-open {
+    height: calc(100vh - 80px);
+  }
 }
 
 /* Empty state */
@@ -210,6 +219,52 @@
   font-size: 0.85rem;
   text-align: center;
   padding: 2rem 1rem;
+}
+
+/* ── Notes ── */
+.notes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  height: 100%;
+}
+
+.notes-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.notes-textarea {
+  flex: 1;
+  width: 100%;
+  min-height: 200px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-family: var(--font-bible);
+  font-size: 0.95rem;
+  font-weight: 300;
+  line-height: 1.7;
+  padding: 0.875rem 1rem;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.notes-textarea::placeholder {
+  color: var(--text-disabled);
+}
+
+.notes-textarea:focus {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.notes-char-count {
+  font-size: 0.7rem;
+  color: var(--text-disabled);
+  text-align: right;
 }
 
 /* ── Desktop: right sidebar column ── */

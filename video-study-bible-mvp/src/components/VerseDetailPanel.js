@@ -4,7 +4,7 @@ import Commentary from './Commentary';
 import CrossReferences from './CrossReferences';
 import TopicExplorer from './TopicExplorer';
 import AIInsights from './AIInsights';
-import { Video, MessageSquare, Link2, Hash, Sparkles, X } from 'lucide-react';
+import { Video, MessageSquare, Link2, Hash, Sparkles, X, NotebookPen } from 'lucide-react';
 import './VerseDetailPanel.css';
 
 const HIGHLIGHT_COLORS = [
@@ -15,10 +15,11 @@ const HIGHLIGHT_COLORS = [
 ];
 
 const TABS = [
-  { id: 'videos',      icon: Video,         label: 'Videos'      },
   { id: 'commentary',  icon: MessageSquare, label: 'Kommentar'   },
+  { id: 'videos',      icon: Video,         label: 'Videos'      },
   { id: 'cross-refs',  icon: Link2,         label: 'Querverweise'},
   { id: 'topics',      icon: Hash,          label: 'Themen'      },
+  { id: 'notes',       icon: NotebookPen,   label: 'Notizen'     },
   { id: 'ai',          icon: Sparkles,      label: 'KI-Chat'     },
 ];
 
@@ -32,8 +33,9 @@ function VerseDetailPanel({
   onTimestampClick,
   onVerseSelect,
 }) {
-  const [activeTab, setActiveTab] = useState('videos');
+  const [activeTab, setActiveTab] = useState('commentary');
   const [highlightColor, setHighlightColor] = useState(null);
+  const [notes, setNotes] = useState('');
 
   const handleHighlight = (colorId) => {
     setHighlightColor(prev => prev === colorId ? null : colorId);
@@ -156,6 +158,21 @@ function VerseDetailPanel({
               verse={verseRef}
               studyData={studyData}
             />
+          )}
+          {verseRef && activeTab === 'notes' && (
+            <div className="notes-container">
+              <p className="notes-label">Persönliche Notizen zu {verseRef}</p>
+              <textarea
+                className="notes-textarea"
+                value={notes}
+                onChange={e => setNotes(e.target.value)}
+                placeholder="Gedanken, Fragen, Einsichten…"
+                rows={12}
+              />
+              {notes && (
+                <p className="notes-char-count">{notes.length} Zeichen</p>
+              )}
+            </div>
           )}
         </div>
       </div>
