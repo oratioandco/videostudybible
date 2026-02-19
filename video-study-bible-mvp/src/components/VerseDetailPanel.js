@@ -73,7 +73,7 @@ function VerseDetailPanel({
             className="panel-icon-btn"
             onClick={() => {
               if (navigator.share && verseRef) {
-                navigator.share({ title: verseRef, text: verseText || verseRef, url: window.location.href });
+                navigator.share({ title: verseRef, text: verseText || verseRef, url: window.location.href }).catch(() => {});
               }
             }}
             aria-label="Teilen"
