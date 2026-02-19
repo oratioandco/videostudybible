@@ -1,9 +1,6 @@
 /* ── Bible Viewer Container ── */
 .bible-viewer {
-  background: var(--bg-elevated);
-  border-radius: 16px;
-  border: 1px solid var(--bg-border);
-  overflow: hidden;
+  background: transparent;
 }
 
 /* ── Header ── */
@@ -14,7 +11,6 @@
   align-items: center;
   gap: 1rem;
   text-align: center;
-  border-bottom: 1px solid var(--bg-border);
 }
 
 .bible-header-left {
@@ -91,9 +87,9 @@
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
-  background: var(--bg-elevated);
+  background: var(--bg-dropdown);
   border: 1px solid var(--bg-border);
-  border-radius: 12px;
+  border-radius: 16px;
   min-width: 240px;
   z-index: 200;
   list-style: none;
@@ -156,7 +152,7 @@
 }
 
 .verse:hover {
-  background: var(--bg-hover);
+  background: var(--bg-surface);
 }
 
 .verse:active {

@@ -49,7 +49,7 @@
   font-size: 0.875rem;
   font-family: monospace;
   outline: none;
-  background: var(--bg-hover);
+  background: var(--bg-surface);
   color: var(--text-primary);
 }
 
@@ -141,7 +141,7 @@
   font-size: 0.8rem;
   font-weight: 500;
   border: 1px solid var(--bg-border);
-  background: var(--bg-hover);
+  background: var(--bg-surface);
   color: var(--text-muted);
   transition: all 0.15s;
 }
@@ -230,7 +230,7 @@
 .example-questions button {
   text-align: left;
   padding: 0.55rem 0.875rem;
-  background: var(--bg-hover);
+  background: var(--bg-surface);
   border: 1px solid var(--bg-border);
   border-radius: 8px;
   font-size: 0.875rem;
@@ -292,7 +292,7 @@
 }
 
 .chat-message.assistant .message-bubble {
-  background: var(--bg-hover);
+  background: var(--bg-surface);
   color: var(--text-secondary);
   border-bottom-left-radius: 4px;
   border: 1px solid var(--bg-border);
@@ -350,7 +350,7 @@
   font-size: 0.9rem;
   outline: none;
   transition: border-color 0.15s;
-  background: var(--bg-hover);
+  background: var(--bg-surface);
   color: var(--text-primary);
 }
 
@@ -359,7 +359,7 @@
 }
 
 .chat-input-row input:disabled {
-  background: var(--bg-hover);
+  background: var(--bg-surface);
   color: var(--text-disabled);
 }
 
@@ -387,7 +387,7 @@
 }
 
 .chat-input-row button:disabled {
-  background: var(--bg-hover);
+  background: var(--bg-surface);
   cursor: not-allowed;
 }
 

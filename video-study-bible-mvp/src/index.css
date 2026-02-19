@@ -1,9 +1,10 @@
 /* ── Design Tokens — Light mode (default) ── */
 :root {
   /* Backgrounds — stone/warm palette matching ProtoBible bible reader */
-  --bg-primary:   #fafaf9;   /* stone-50: page background */
-  --bg-elevated:  #f5f5f4;   /* stone-100: cards, panels, header */
-  --bg-card:      #f5f5f4;
+  --bg-primary:   #fafaf9;              /* stone-50: page background */
+  --bg-elevated:  rgba(255,255,255,0.8);/* header (semi-transparent/blur) */
+  --bg-surface:   rgba(0, 0, 0, 0.04); /* inner section tint */
+  --bg-dropdown:  #ffffff;              /* solid floating menus */
   --bg-border:    rgba(0, 0, 0, 0.08);
   --bg-hover:     rgba(0, 0, 0, 0.05);
 
@@ -30,9 +31,10 @@
 
 /* ── Dark mode ── */
 html.dark {
-  --bg-primary:   #0E0E0E;
-  --bg-elevated:  #1a1a1a;
-  --bg-card:      #1a1a1a;
+  --bg-primary:   #111111;
+  --bg-elevated:  rgba(17, 17, 17, 0.85); /* header semi-transparent */
+  --bg-surface:   rgba(255, 255, 255, 0.04);
+  --bg-dropdown:  #1a1a1a;              /* solid floating menus */
   --bg-border:    rgba(255, 255, 255, 0.08);
   --bg-hover:     rgba(255, 255, 255, 0.05);
 
@@ -45,14 +47,15 @@ html.dark {
   --accent-hover:  #60a5fa;
 
   --overlay-medium: rgba(0, 0, 0, 0.6);
-  --shadow-card: 0 0 0 1px rgba(255,255,255,0.08);
+  --shadow-card: none;
 }
 
 /* ── Sepia mode ── */
 html.sepia {
   --bg-primary:   #f7f5f2;
-  --bg-elevated:  #ebe7e0;
-  --bg-card:      #ebe7e0;
+  --bg-elevated:  rgba(247, 245, 242, 0.85); /* header semi-transparent */
+  --bg-surface:   rgba(90, 80, 71, 0.06);
+  --bg-dropdown:  #ebe7e0;              /* solid floating menus */
   --bg-border:    rgba(90, 80, 71, 0.15);
   --bg-hover:     rgba(90, 80, 71, 0.06);
 

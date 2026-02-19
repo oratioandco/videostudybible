@@ -14,6 +14,8 @@
 /* ── Header ── */
 .app-header {
   background: var(--bg-elevated);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   color: var(--text-primary);
   padding: 0.875rem 1.5rem;
   border-bottom: 1px solid var(--bg-border);
