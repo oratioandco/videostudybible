@@ -170,15 +170,16 @@
 
 /* ── Verse Number ── */
 .verse-number {
-  font-weight: 400;
+  font-weight: 300;
   color: var(--text-disabled);
   min-width: 1.5rem;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   line-height: 1;
   user-select: none;
   flex-shrink: 0;
-  padding-top: 0.32rem;
+  padding-top: 0.35rem;
   text-align: right;
+  opacity: 0.5;
 }
 
 /* Verses with videos get a blue verse number */
@@ -190,9 +191,9 @@
 /* ── Verse Text ── */
 .verse-text {
   flex: 1;
-  font-family: var(--font-bible);
-  font-size: 1.0625rem;
-  line-height: 1.82;
+  font-family: var(--font-ui);
+  font-size: 1.125rem;
+  line-height: 1.8;
   color: var(--text-primary);
   font-weight: 300;
 }

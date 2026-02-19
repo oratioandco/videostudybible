@@ -18,9 +18,9 @@ const TABS = [
   { id: 'commentary',  icon: MessageSquare, label: 'Kommentar'   },
   { id: 'videos',      icon: Video,         label: 'Videos'      },
   { id: 'ai',          icon: Sparkles,      label: 'KI-Chat'     },
+  { id: 'notes',       icon: NotebookPen,   label: 'Notizen'     },
   { id: 'cross-refs',  icon: Link2,         label: 'Querverweise'},
   { id: 'topics',      icon: Hash,          label: 'Themen'      },
-  { id: 'notes',       icon: NotebookPen,   label: 'Notizen'     },
 ];
 
 function VerseDetailPanel({

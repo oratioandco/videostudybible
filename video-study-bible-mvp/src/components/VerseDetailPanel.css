@@ -95,25 +95,33 @@
 
 /* ── Verse text + highlight — never shrinks ── */
 .panel-verse-section {
-  padding: 1rem 1.25rem 0.875rem;
+  padding: 2rem 2rem 1.25rem;
   border-bottom: 1px solid var(--bg-border);
-  border-left: 3px solid transparent;
-  transition: background 0.2s, border-color 0.2s;
+  transition: background 0.2s;
   flex-shrink: 0;
+  background: var(--bg-surface);
 }
 
 .panel-verse-text {
   font-family: var(--font-bible);
-  font-size: 1rem;
+  font-size: 1.5rem;
   line-height: 1.75;
   color: var(--text-primary);
-  font-weight: 400;
-  margin-bottom: 0.75rem;
+  font-weight: 300;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .panel-verse-text {
+    font-size: 1.75rem;
+  }
 }
 
 .panel-highlight-row {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
 }
 
