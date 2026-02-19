@@ -4,7 +4,7 @@ import Commentary from './Commentary';
 import CrossReferences from './CrossReferences';
 import TopicExplorer from './TopicExplorer';
 import AIInsights from './AIInsights';
-import { Video, MessageSquare, Link2, Hash, Sparkles, X, NotebookPen } from 'lucide-react';
+import { Video, MessageSquare, Link2, Hash, Sparkles, ChevronLeft, Share2, NotebookPen } from 'lucide-react';
 import './VerseDetailPanel.css';
 
 const HIGHLIGHT_COLORS = [
@@ -17,10 +17,10 @@ const HIGHLIGHT_COLORS = [
 const TABS = [
   { id: 'commentary',  icon: MessageSquare, label: 'Kommentar'   },
   { id: 'videos',      icon: Video,         label: 'Videos'      },
+  { id: 'ai',          icon: Sparkles,      label: 'KI-Chat'     },
   { id: 'cross-refs',  icon: Link2,         label: 'Querverweise'},
   { id: 'topics',      icon: Hash,          label: 'Themen'      },
   { id: 'notes',       icon: NotebookPen,   label: 'Notizen'     },
-  { id: 'ai',          icon: Sparkles,      label: 'KI-Chat'     },
 ];
 
 function VerseDetailPanel({
@@ -61,13 +61,24 @@ function VerseDetailPanel({
         {/* ── Header ── */}
         <div className="panel-header">
           <div className="panel-handle" />
-          <span className="panel-verse-ref">{verseRef}</span>
           <button
-            className="panel-close-btn"
+            className="panel-icon-btn"
             onClick={onClose}
             aria-label="Schließen"
           >
-            <X size={16} />
+            <ChevronLeft size={18} strokeWidth={1.5} />
+          </button>
+          <span className="panel-verse-ref">{verseRef}</span>
+          <button
+            className="panel-icon-btn"
+            onClick={() => {
+              if (navigator.share && verseRef) {
+                navigator.share({ title: verseRef, text: verseText || verseRef, url: window.location.href });
+              }
+            }}
+            aria-label="Teilen"
+          >
+            <Share2 size={17} strokeWidth={1.5} />
           </button>
         </div>
 
