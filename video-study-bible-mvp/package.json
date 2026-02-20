@@ -26,6 +26,7 @@
       "react-app/jest"
     ]
   },
+  "proxy": "https://bibelthek-backend.bibeltv.de",
   "browserslist": {
     "production": [
       ">0.2%",

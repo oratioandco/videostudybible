@@ -1,151 +1,321 @@
+/* ── Bible Viewer Container ── */
 .bible-viewer {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  overflow: hidden;
+  background: transparent;
 }
 
+/* ── Header ── */
 .bible-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 1.5rem;
+  padding: 2.5rem 2rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
 }
 
+/* Large chapter title */
 .bible-header h2 {
-  font-size: 1.75rem;
-  margin-bottom: 0.25rem;
+  font-size: 3rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+  font-family: var(--font-heading);
+  line-height: 1.05;
 }
 
+@media (min-width: 768px) {
+  .bible-header h2 {
+    font-size: 3.5rem;
+  }
+}
+
+/* Translation full name — tiny subtitle below pill */
 .translation {
-  font-size: 0.875rem;
-  opacity: 0.9;
+  font-size: 0.7rem;
+  color: var(--text-disabled);
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  margin: 0;
 }
 
+.bible-loading-hint {
+  font-size: 0.68rem;
+  color: var(--text-disabled);
+  letter-spacing: 0.08em;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+/* ── Translation Switcher ── */
+.translation-switcher {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.translation-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-border);
+  color: var(--text-secondary);
+  border-radius: 9999px;
+  padding: 6px 16px;
+  font-size: 0.875rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0;
+}
+
+.translation-btn:hover {
+  background: var(--bg-border);
+  color: var(--text-primary);
+}
+
+.translation-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-dropdown);
+  border: 1px solid var(--bg-border);
+  border-radius: 20px;
+  min-width: 260px;
+  z-index: 200;
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+  box-shadow: 0 12px 48px var(--overlay-medium);
+}
+
+.translation-option {
+  padding: 12px 16px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  transition: background 0.1s;
+}
+
+.translation-option:hover {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.translation-option.selected {
+  color: var(--accent-action);
+}
+
+.translation-name {
+  font-weight: 400;
+}
+
+.translation-abbr {
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.translation-option.selected .translation-abbr {
+  color: var(--accent-action);
+  opacity: 0.7;
+}
+
+/* ── Verse Text Area ── */
 .bible-text {
-  padding: 1.5rem;
-  max-height: 600px;
+  padding: 1rem 1.5rem 2rem;
+  max-height: calc(100vh - 240px);
   overflow-y: auto;
 }
 
+/* ── Individual Verse ── */
 .verse {
   display: flex;
-  gap: 1rem;
-  padding: 0.75rem;
-  border-radius: 6px;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.15s;
   position: relative;
+  margin: 0 -0.75rem;
 }
 
 .verse:hover {
-  background: #f3f4f6;
+  background: var(--bg-surface);
+}
+
+.verse:active {
+  transform: scale(0.998);
 }
 
 .verse.selected {
-  background: #ede9fe;
-  border-left: 3px solid #667eea;
+  background: rgba(59, 130, 246, 0.08);
+  outline: 1px solid rgba(59, 130, 246, 0.2);
+  outline-offset: -1px;
 }
 
-.verse.has-videos {
-  padding-left: 2rem;
-}
-
-.verse.has-videos::before {
-  content: '';
-  position: absolute;
-  left: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 6px;
-  height: 6px;
-  background: #667eea;
-  border-radius: 50%;
-}
-
+/* ── Verse Number ── */
 .verse-number {
-  font-weight: 600;
-  color: #667eea;
-  min-width: 2rem;
-  font-size: 0.875rem;
+  font-weight: 300;
+  color: var(--text-disabled);
+  min-width: 1.5rem;
+  font-size: 0.72rem;
+  line-height: 1;
+  user-select: none;
+  flex-shrink: 0;
+  padding-top: 0.35rem;
+  text-align: right;
+  opacity: 0.5;
 }
 
+/* Verses with videos get a blue verse number */
+.verse.has-videos .verse-number {
+  color: var(--accent-action);
+  opacity: 0.75;
+}
+
+/* ── Verse Text ── */
 .verse-text {
   flex: 1;
-  line-height: 1.6;
-}
-
-.video-indicator {
-  color: #667eea;
-  opacity: 0.6;
-}
-
-.verse-videos {
-  padding: 1.5rem;
-  border-top: 1px solid #e5e7eb;
-  background: #f9fafb;
-}
-
-.verse-videos h3 {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  color: #1f2937;
+  font-family: var(--font-ui);
   font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--text-primary);
+  font-weight: 300;
 }
 
-.video-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.video-card {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 1rem;
-  transition: all 0.2s;
-}
-
-.video-card:hover {
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.video-info h4 {
-  font-size: 0.95rem;
-  color: #1f2937;
-  margin-bottom: 0.5rem;
-}
-
-.mention-count {
-  font-size: 0.8rem;
-  color: #6b7280;
-}
-
-.video-timestamps {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-}
-
-.timestamp-btn {
+/* ── Content indicators (study mode) ── */
+.verse-indicators {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  background: #ede9fe;
-  color: #667eea;
-  border: none;
-  padding: 0.375rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
+  gap: 3px;
+  align-self: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  margin-right: 0.25rem;
+  opacity: 0.55;
+  transition: opacity 0.15s;
 }
 
-.timestamp-btn:hover {
-  background: #667eea;
-  color: white;
+.verse:hover .verse-indicators {
+  opacity: 0.9;
+}
+
+.verse-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.verse-dot--commentary { background: #a78bfa; }
+.verse-dot--video      { background: var(--accent-action); }
+.verse-dot--note       { background: #34d399; }
+
+/* ── Chevron — appears on hover ── */
+.verse-chevron {
+  flex-shrink: 0;
+  color: var(--text-disabled);
+  opacity: 0;
+  transition: opacity 0.15s;
+  align-self: center;
+}
+
+.verse:hover .verse-chevron {
+  opacity: 1;
+}
+
+/* ── Reading Mode ── */
+.bible-text.reading-mode {
+  max-height: none;
+  overflow-y: visible;
+}
+
+.reading-paragraph {
+  font-family: var(--font-ui);
+  font-size: 1.125rem;
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--text-primary);
+  margin: 0;
+  text-align: left;
+}
+
+.reading-verse {
+  display: inline;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background 0.15s;
+}
+
+.reading-verse:hover {
+  background: var(--bg-surface);
+}
+
+.reading-verse-video-icon {
+  display: inline;
+  color: var(--accent-action);
+  opacity: 0.55;
+  margin-left: 0.3em;
+  vertical-align: middle;
+  user-select: none;
+  transition: opacity 0.15s;
+}
+
+.reading-verse:hover .reading-verse-video-icon {
+  opacity: 1;
+}
+
+.reading-verse-note-icon {
+  display: inline;
+  color: #34d399;
+  opacity: 0.55;
+  margin-left: 0.25em;
+  vertical-align: middle;
+  user-select: none;
+  transition: opacity 0.15s;
+}
+
+.reading-verse:hover .reading-verse-note-icon {
+  opacity: 1;
+}
+
+.reading-verse-num {
+  font-size: 0.65em;
+  font-weight: 400;
+  color: var(--text-disabled);
+  margin-right: 0.1em;
+  vertical-align: super;
+  user-select: none;
+  line-height: 0;
+  position: relative;
+}
+
+/* Subtle dot on superscript when verse has content (reading mode) */
+.reading-verse-num.has-content::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--text-disabled);
+  opacity: 0.6;
 }

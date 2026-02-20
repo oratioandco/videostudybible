@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Play, Clock } from 'lucide-react';
+import { Search, Play } from 'lucide-react';
 import './VideoList.css';
 
 const CATEGORIES = [
@@ -12,11 +12,11 @@ const CATEGORIES = [
 ];
 
 const CAT = {
-  textanalyse:    { label: 'Textanalyse',    fg: '#0369a1', bg: '#dbeafe', border: '#3b82f6' },
-  theologisch:    { label: 'Theologisch',    fg: '#5b21b6', bg: '#ede9fe', border: '#7c3aed' },
-  christologisch: { label: 'Christologisch', fg: '#92400e', bg: '#fef3c7', border: '#d97706' },
-  anwendung:      { label: 'Anwendung',      fg: '#065f46', bg: '#d1fae5', border: '#059669' },
-  illustrationen: { label: 'Illustrationen', fg: '#9d174d', bg: '#fce7f3', border: '#db2777' },
+  textanalyse:    { label: 'Textanalyse',    fg: '#60a5fa', bg: 'rgba(59,130,246,0.15)', border: '#3b82f6' },
+  theologisch:    { label: 'Theologisch',    fg: '#a78bfa', bg: 'rgba(139,92,246,0.15)', border: '#7c3aed' },
+  christologisch: { label: 'Christologisch', fg: '#fbbf24', bg: 'rgba(245,158,11,0.15)', border: '#d97706' },
+  anwendung:      { label: 'Anwendung',      fg: '#34d399', bg: 'rgba(16,185,129,0.15)', border: '#059669' },
+  illustrationen: { label: 'Illustrationen', fg: '#f472b6', bg: 'rgba(236,72,153,0.15)', border: '#db2777' },
 };
 
 function cleanTitle(raw) {
@@ -25,7 +25,6 @@ function cleanTitle(raw) {
   if (t.length > 60) t = t.slice(0, 60).replace(/\s+\S*$/, '');
   return t.trim();
 }
-
 
 function dedupeByTimestamp(mentions) {
   const seen = new Set();
@@ -44,6 +43,7 @@ function buildClips(videos) {
       displayTitle: video.display_title || cleanTitle(video.title),
       speaker: video.speaker || null,
       speakerAvatar: video.speaker_avatar || null,
+      thumb: video.thumb || null,
       series: video.series || null,
       organization: video.organization || null,
     };
@@ -56,105 +56,112 @@ function buildClips(videos) {
 }
 
 function ClipCard({ clip, onPlayClip }) {
-  const { mention, video, displayTitle, speaker, speakerAvatar, series, organization, hasClipData } = clip;
+  const { mention, video, displayTitle, speaker, speakerAvatar, thumb, series, hasClipData } = clip;
   const cat = CAT[mention.category] || null;
-  const accentColor = cat?.border || '#d1d5db';
+  const accentColor = cat?.border || 'rgba(255,255,255,0.2)';
   const duration = hasClipData ? formatDuration(mention.clip_start_ms, mention.clip_end_ms) : null;
   const title = mention.clip_title || displayTitle;
-  const description = mention.clip_description || null;
-  const sourceLabel = speaker || organization || series || displayTitle;
+  const description = mention.clip_description || mention.context || null;
 
   return (
-    <div style={{
-      background: '#fff',
-      borderRadius: '10px',
-      border: '1px solid #e5e7eb',
-      borderLeft: `3px solid ${accentColor}`,
-      padding: '13px 15px 11px',
-      boxShadow: '0 1px 3px rgba(0,0,0,.05)',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '6px',
-    }}>
-
-      {/* Row 1: category + duration */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          {cat && (
-            <span style={{
-              fontSize: '.62rem', fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase',
-              padding: '2px 8px', borderRadius: '20px',
-              background: cat.bg, color: cat.fg,
-            }}>
-              {cat.label}
-            </span>
-          )}
-          {!cat && <span style={{ fontSize: '.7rem', color: '#9ca3af' }}>{mention.category}</span>}
-        </div>
-        {duration ? (
-          <span style={{ fontSize: '.72rem', fontWeight: 600, color: '#9ca3af', fontFamily: 'monospace' }}>
+    <div
+      className="cc-card"
+      onClick={() => onPlayClip(video, mention.clip_start_ms ?? mention.timestamp_ms, mention.clip_end_ms ?? null)}
+      style={{
+        background: 'var(--bg-elevated)',
+        borderRadius: '10px',
+        border: '1px solid var(--bg-border)',
+        borderLeft: `3px solid ${accentColor}`,
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'row',
+        gap: 0,
+        cursor: 'pointer',
+        minHeight: 72,
+      }}
+    >
+      {/* Thumbnail — fixed 96px wide, stretches to card height */}
+      <div style={{ width: 96, flexShrink: 0, alignSelf: 'stretch', position: 'relative', background: 'var(--bg-surface)', minHeight: 72, overflow: 'hidden' }}>
+        {thumb ? (
+          <img
+            src={thumb}
+            alt={title}
+            onError={e => { e.target.style.display = 'none'; }}
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+          />
+        ) : (
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Play size={18} color="var(--text-disabled)" />
+          </div>
+        )}
+        {/* Duration badge */}
+        {duration && (
+          <span style={{
+            position: 'absolute', bottom: 4, right: 4,
+            background: 'rgba(0,0,0,0.75)', color: '#fff',
+            fontSize: '.6rem', fontWeight: 600, fontFamily: 'monospace',
+            padding: '1px 5px', borderRadius: 4,
+          }}>
             {duration}
           </span>
-        ) : mention.timestamp ? (
-          <span style={{ fontSize: '.7rem', color: '#9ca3af', fontFamily: 'monospace', display: 'flex', alignItems: 'center', gap: '3px' }}>
-            <Clock size={10} />{mention.timestamp}
+        )}
+      </div>
+
+      {/* Text content */}
+      <div style={{ flex: 1, padding: '9px 12px 9px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 3, minWidth: 0 }}>
+
+        {/* Category badge */}
+        {cat && (
+          <span style={{
+            display: 'inline-block', alignSelf: 'flex-start',
+            fontSize: '.58rem', fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase',
+            padding: '1px 7px', borderRadius: '20px',
+            background: cat.bg, color: cat.fg,
+          }}>
+            {cat.label}
           </span>
-        ) : null}
-      </div>
+        )}
 
-      {/* Row 2: title */}
-      <div style={{ fontSize: '.95rem', fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>
-        {title}
-      </div>
-
-      {/* Row 3: description */}
-      {description && (
-        <div style={{ fontSize: '.79rem', color: '#6b7280', lineHeight: 1.5 }}>
-          {description}
+        {/* Title */}
+        <div style={{
+          fontSize: '.85rem', fontWeight: 600, color: 'var(--text-primary)',
+          lineHeight: 1.3, overflow: 'hidden',
+          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+        }}>
+          {title}
         </div>
-      )}
 
-      {/* Row 4: source + play — separated by subtle line */}
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        marginTop: '4px', paddingTop: '9px',
-        borderTop: '1px solid #f3f4f6',
-        gap: '8px',
-      }}>
-        {/* source */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
+        {/* Description (1 line) */}
+        {description && (
+          <div style={{
+            fontSize: '.73rem', color: 'var(--text-muted)', lineHeight: 1.35,
+            overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+          }}>
+            {description}
+          </div>
+        )}
+
+        {/* Source line */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
           {speakerAvatar ? (
             <img
               src={speakerAvatar}
-              alt={sourceLabel}
-              style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid #e5e7eb' }}
+              alt={speaker}
+              style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
               onError={e => { e.target.style.display = 'none'; }}
             />
           ) : (
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: accentColor, flexShrink: 0, display: 'inline-block' }} />
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: accentColor, flexShrink: 0, display: 'inline-block', opacity: 0.6 }} />
           )}
-          <div style={{ minWidth: 0 }}>
-            {speaker && <div style={{ fontSize: '.75rem', fontWeight: 600, color: '#374151', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{speaker}</div>}
-            {series && <div style={{ fontSize: '.69rem', color: '#9ca3af', fontStyle: 'italic', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{series}</div>}
-            {!speaker && !series && <div style={{ fontSize: '.75rem', color: '#6b7280', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sourceLabel}</div>}
-          </div>
+          <span style={{ fontSize: '.7rem', color: 'var(--text-muted)', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+            {speaker || series || displayTitle}
+          </span>
+          {!duration && mention.timestamp && (
+            <span style={{ fontSize: '.68rem', color: 'var(--text-disabled)', fontFamily: 'monospace', marginLeft: 'auto', flexShrink: 0 }}>
+              {mention.timestamp}
+            </span>
+          )}
         </div>
-
-        {/* play */}
-        <button
-          className="clip-play-btn"
-          onClick={() => onPlayClip(video, mention.clip_start_ms ?? mention.timestamp_ms, mention.clip_end_ms ?? null)}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: '5px',
-            background: '#667eea', color: '#fff', border: 'none',
-            padding: '5px 13px', borderRadius: '20px',
-            fontSize: '.77rem', fontWeight: 600, cursor: 'pointer',
-            flexShrink: 0, whiteSpace: 'nowrap',
-          }}
-        >
-          <Play size={11} fill="currentColor" />
-          {hasClipData ? 'Abspielen' : 'Öffnen'}
-        </button>
       </div>
     </div>
   );
@@ -165,7 +172,7 @@ function VideoList({ verse, studyData, onVideoSelect, onTimestampClick }) {
   const [activeCat, setActiveCat] = useState(null);
 
   const g1 = studyData?.verses?.genesis1 || {};
-  const altVerse = verse.replace(/^Genesis (\d+):(\d+)$/, '1. Mose $1:$2');
+  const altVerse = (verse || '').replace(/^Genesis (\d+):(\d+)$/, '1. Mose $1:$2');
   const allVideos = [...(g1[verse] || []), ...(verse !== altVerse ? (g1[altVerse] || []) : [])];
 
   const allClips = buildClips(allVideos);
@@ -186,9 +193,9 @@ function VideoList({ verse, studyData, onVideoSelect, onTimestampClick }) {
 
   if (allVideos.length === 0) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center', color: '#6b7280' }}>
+      <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
         <p>Keine Videos für diesen Vers.</p>
-        <p style={{ fontSize: '.875rem', fontStyle: 'italic', marginTop: '.5rem' }}>
+        <p style={{ fontSize: '.875rem', fontStyle: 'italic', marginTop: '.5rem', color: 'var(--text-disabled)' }}>
           Wähle einen Vers mit blauem Symbol.
         </p>
       </div>
@@ -200,11 +207,11 @@ function VideoList({ verse, studyData, onVideoSelect, onTimestampClick }) {
 
       {/* header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#111827', margin: 0 }}>
+        <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
           Clips zu {verse}
         </h3>
         <span style={{
-          fontSize: '.71rem', fontWeight: 700, background: '#667eea', color: '#fff',
+          fontSize: '.71rem', fontWeight: 700, background: 'var(--accent-action)', color: '#fff',
           padding: '2px 10px', borderRadius: '12px',
         }}>
           {clips.length}/{allClips.length}
@@ -212,18 +219,17 @@ function VideoList({ verse, studyData, onVideoSelect, onTimestampClick }) {
       </div>
 
       {/* search */}
-      <div style={{
+      <div className="vl-search" style={{
         display: 'flex', alignItems: 'center', gap: '8px',
-        background: '#f9fafb', border: '1px solid #e5e7eb',
+        background: 'rgba(255,255,255,0.05)', border: '1px solid var(--bg-border)',
         borderRadius: '8px', padding: '8px 12px',
       }}>
-        <Search size={14} color="#9ca3af" />
+        <Search size={14} color="var(--text-muted)" />
         <input
           type="text"
           placeholder="Clips durchsuchen…"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: '.84rem', color: '#374151', flex: 1 }}
         />
       </div>
 
@@ -234,11 +240,12 @@ function VideoList({ verse, studyData, onVideoSelect, onTimestampClick }) {
           return (
             <button
               key={c.key}
+              className={`vl-chip ${active ? 'active' : ''}`}
               onClick={() => setActiveCat(c.key)}
               style={{
-                background: active ? '#667eea' : '#f3f4f6',
-                color: active ? '#fff' : '#6b7280',
-                border: `1px solid ${active ? '#667eea' : '#e5e7eb'}`,
+                background: active ? 'var(--accent-action)' : 'rgba(255,255,255,0.07)',
+                color: active ? '#fff' : 'var(--text-muted)',
+                border: `1px solid ${active ? 'var(--accent-action)' : 'var(--bg-border)'}`,
                 padding: '4px 13px', borderRadius: '20px',
                 fontSize: '.71rem', fontWeight: 500, cursor: 'pointer',
               }}
@@ -251,11 +258,11 @@ function VideoList({ verse, studyData, onVideoSelect, onTimestampClick }) {
 
       {/* feed */}
       {clips.length === 0 ? (
-        <p style={{ textAlign: 'center', color: '#9ca3af', fontSize: '.85rem', padding: '1.5rem' }}>
+        <p style={{ textAlign: 'center', color: 'var(--text-disabled)', fontSize: '.85rem', padding: '1.5rem' }}>
           Keine Clips für diese Filterung.
         </p>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {clips.map((clip, idx) => (
             <ClipCard key={idx} clip={clip} onPlayClip={handlePlayClip} />
           ))}

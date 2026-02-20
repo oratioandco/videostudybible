@@ -1,0 +1,556 @@
+/* ── Verse Detail Panel ── */
+
+/* Backdrop — mobile only */
+.verse-detail-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-medium);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+  z-index: 98;
+}
+
+.verse-detail-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Mobile: bottom sheet ── */
+.verse-detail-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--bg-border);
+  border-radius: 24px 24px 0 0;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  z-index: 99;
+  height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 -12px 48px var(--overlay-medium);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.verse-detail-panel.is-open {
+  transform: translateY(0);
+}
+
+/* ── Panel header — never shrinks ── */
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1rem 0.875rem;
+  border-bottom: 1px solid var(--bg-border);
+  background: var(--bg-primary);
+  flex-shrink: 0;
+}
+
+.panel-handle {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 3px;
+  background: var(--bg-border);
+  border-radius: 2px;
+}
+
+.panel-verse-ref {
+  flex: 1;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.panel-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.panel-icon-btn:hover {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+/* ── Verse text (mobile only) — never shrinks ── */
+.panel-verse-section {
+  padding: 2rem 2rem 1.5rem;
+  border-bottom: 1px solid var(--bg-border);
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.panel-verse-text {
+  font-family: var(--font-bible);
+  font-size: 1.5rem;
+  line-height: 1.75;
+  color: var(--text-primary);
+  font-weight: 300;
+  text-align: center;
+}
+
+/* ── Action toolbar — highlights + note/audio/image shortcuts ── */
+.panel-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--bg-border);
+  flex-shrink: 0;
+  gap: 0.5rem;
+}
+
+.panel-action-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.panel-action-group--right {
+  margin-left: auto;
+}
+
+.highlight-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.highlight-dot:hover {
+  transform: scale(1.2);
+}
+
+.highlight-dot.active {
+  border-color: var(--text-primary);
+  box-shadow: 0 0 0 2px var(--bg-border);
+}
+
+.highlight-clear {
+  background: none;
+  border: none;
+  color: var(--text-disabled);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.highlight-clear:hover {
+  color: var(--text-muted);
+}
+
+.panel-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.panel-action-btn:hover {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.panel-action-btn--stub {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.panel-action-btn--stub:hover {
+  background: none;
+  color: var(--text-muted);
+}
+
+/* ── Tabs — never shrinks ── */
+.panel-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--bg-border);
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+  padding: 0 0.75rem;
+}
+
+.panel-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.panel-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: none;
+  border: none;
+  padding: 0.75rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.panel-tab:hover {
+  color: var(--text-secondary);
+}
+
+.panel-tab.active {
+  color: var(--text-primary);
+  font-weight: 500;
+  border-bottom-color: var(--accent-action);
+}
+
+/* ── Panel body — fills all remaining space, only thing that scrolls ── */
+.panel-body {
+  flex: 1;
+  min-height: 0; /* critical for flex children to respect overflow */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Empty state ── */
+.panel-empty {
+  color: var(--text-disabled);
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+/* ── Notes ── */
+.notes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.notes-empty {
+  color: var(--text-disabled);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 1.5rem 1rem 0.5rem;
+}
+
+/* ── Note cards ── */
+.note-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-border);
+  border-radius: 12px;
+  padding: 0.875rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.note-attachment-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+.note-attachment-badge--audio {
+  background: rgba(167, 139, 250, 0.15);
+  color: #a78bfa;
+}
+
+.note-attachment-badge--image {
+  background: rgba(96, 165, 250, 0.15);
+  color: #60a5fa;
+}
+
+.note-card-text {
+  font-size: 0.9rem;
+  font-weight: 300;
+  color: var(--text-primary);
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.note-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.125rem;
+}
+
+.note-card-date {
+  font-size: 0.7rem;
+  color: var(--text-disabled);
+}
+
+.note-card-delete {
+  background: none;
+  border: none;
+  color: var(--text-disabled);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.note-card-delete:hover {
+  color: var(--text-muted);
+}
+
+/* ── Add note button ── */
+.note-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  background: none;
+  border: 1px dashed var(--bg-border);
+  border-radius: 12px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.note-add-btn:hover {
+  border-color: var(--text-muted);
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+}
+
+/* ── Composer ── */
+.note-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-border);
+  border-radius: 12px;
+  padding: 0.875rem 1rem;
+  animation: composer-expand 0.18s ease;
+}
+
+@keyframes composer-expand {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.note-composer-attachment {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: var(--bg-hover);
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  width: fit-content;
+}
+
+.note-composer-attachment-remove {
+  background: none;
+  border: none;
+  color: var(--text-disabled);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  margin-left: 0.1rem;
+  transition: color 0.15s;
+}
+
+.note-composer-attachment-remove:hover {
+  color: var(--text-muted);
+}
+
+.note-composer-textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 300;
+  line-height: 1.75;
+  resize: none;
+  outline: none;
+}
+
+.note-composer-textarea::placeholder {
+  color: var(--text-disabled);
+}
+
+.note-composer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.375rem;
+  border-top: 1px solid var(--bg-border);
+  margin-top: 0.125rem;
+}
+
+.note-composer-attachments {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.note-composer-attach-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.note-composer-attach-btn:hover,
+.note-composer-attach-btn.active {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.note-composer-submit {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.note-composer-cancel {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  transition: color 0.15s;
+}
+
+.note-composer-cancel:hover {
+  color: var(--text-secondary);
+}
+
+.note-composer-save {
+  background: var(--accent-action);
+  border: none;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  transition: opacity 0.15s;
+}
+
+.note-composer-save:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ── Tablet + Desktop: sticky sidebar ── */
+@media (min-width: 768px) {
+  .verse-detail-backdrop {
+    display: none;
+  }
+
+  .verse-detail-panel {
+    position: sticky;
+    top: calc(56px + 1.25rem);
+    bottom: auto;
+    left: auto;
+    right: auto;
+    transform: none;
+    background: var(--bg-primary);
+    height: calc(100vh - 80px);
+    max-height: none;
+    border-radius: 24px;
+    border: 1px solid var(--bg-border);
+    box-shadow: none;
+    z-index: auto;
+    width: 0;
+    min-width: 0;
+    opacity: 0;
+    pointer-events: none;
+    flex-shrink: 0;
+    transition: width 0.3s cubic-bezier(0.32, 0.72, 0, 1),
+                opacity 0.25s ease;
+  }
+
+  .verse-detail-panel.is-open {
+    width: 440px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .panel-handle {
+    display: none;
+  }
+
+  /* Verse preview hidden on desktop — verse is visible in context */
+  .panel-verse-section {
+    display: none;
+  }
+
+}
+
+@media (min-width: 1200px) {
+  .verse-detail-panel {
+    top: calc(56px + 1.5rem);
+    height: calc(100vh - 88px);
+  }
+
+  .verse-detail-panel.is-open {
+    width: 480px;
+  }
+}
