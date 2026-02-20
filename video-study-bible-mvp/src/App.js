@@ -3,7 +3,8 @@ import './App.css';
 import BibleViewer, { TranslationSwitcher } from './components/BibleViewer';
 import VideoPlayer from './components/VideoPlayer';
 import VerseDetailPanel from './components/VerseDetailPanel';
-import { Book, Play, Sun, Moon, BookOpen, BookText, SlidersHorizontal, Check } from 'lucide-react';
+import HomeScreen from './components/HomeScreen';
+import { Book, Play, Sun, Moon, BookOpen, BookText, SlidersHorizontal, Check, Home } from 'lucide-react';
 
 const DEFAULT_TRANSLATION = { id: 'LUT', name: 'Lutherbibel 2017', abbreviation: 'LUT' };
 
@@ -30,6 +31,7 @@ function App() {
   const [highlights, setHighlights] = useState({}); // { verseRef: colorId | null }
   const [notes, setNotes] = useState({}); // { verseRef: Note[] }
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [page, setPage] = useState('home'); // 'home' | 'bible'
   const sessionUUIDRef = useRef(null);
 
   // Apply theme class to <html>
@@ -167,11 +169,29 @@ function App() {
             <h1>Video-Studienbibel</h1>
             <span className="beta-badge">Beta</span>
           </div>
+          <nav className="page-nav">
+            <button
+              className={`page-nav-btn ${page === 'home' ? 'active' : ''}`}
+              onClick={() => setPage('home')}
+            >
+              <Home size={14} />
+              <span>Home</span>
+            </button>
+            <button
+              className={`page-nav-btn ${page === 'bible' ? 'active' : ''}`}
+              onClick={() => setPage('bible')}
+            >
+              <BookOpen size={14} />
+              <span>Genesis 1</span>
+            </button>
+          </nav>
           <div className="header-right">
-            <TranslationSwitcher
-              selected={selectedTranslation}
-              onChange={setSelectedTranslation}
-            />
+            {page === 'bible' && (
+              <TranslationSwitcher
+                selected={selectedTranslation}
+                onChange={setSelectedTranslation}
+              />
+            )}
             <div className="settings-menu">
               <button
                 className={`settings-btn ${settingsOpen ? 'active' : ''}`}
@@ -236,7 +256,16 @@ function App() {
         </div>
       </header>
 
-      <div className="main-container">
+      {page === 'home' && (
+        <div className="home-container">
+          <HomeScreen
+            onBibleOpen={() => setPage('bible')}
+            onVideoSelect={handleVideoSelect}
+          />
+        </div>
+      )}
+
+      {page === 'bible' && <div className="main-container">
 
         {/* Left col: video player (desktop only — collapses when no video) */}
         <div className={`video-column ${currentVideo ? 'has-video' : ''}`}>
@@ -281,7 +310,7 @@ function App() {
           onAddNote={handleAddNote}
           onDeleteNote={handleDeleteNote}
         />
-      </div>
+      </div>}
 
       {/* Mini-player bar: mobile/tablet indicator when a video is active */}
       {currentVideo && (
