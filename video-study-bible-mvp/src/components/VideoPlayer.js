@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import ReactPlayer from 'react-player';
 import './VideoPlayer.css';
 
-function VideoPlayer({ video, timestamp, endTime, onTimestampChange }) {
+function VideoPlayer({ video, timestamp, endTime, onTimestampChange, onClose }) {
   const playerRef = useRef(null);
   const [playing, setPlaying] = useState(false);
 
@@ -29,12 +29,19 @@ function VideoPlayer({ video, timestamp, endTime, onTimestampChange }) {
     <div className="video-player-container">
       <div className="video-header">
         <h3>{video.display_title || video.title}</h3>
-        {timestamp > 0 && (
-          <span className="current-timestamp">
-            @ {formatTimestamp(timestamp)}
-            {endTime ? ` – ${formatTimestamp(endTime)}` : ''}
-          </span>
-        )}
+        <div className="video-header-right">
+          {timestamp > 0 && (
+            <span className="current-timestamp">
+              @ {formatTimestamp(timestamp)}
+              {endTime ? ` – ${formatTimestamp(endTime)}` : ''}
+            </span>
+          )}
+          {onClose && (
+            <button className="video-close-btn" onClick={onClose} aria-label="Video schließen">
+              ×
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="player-wrapper">

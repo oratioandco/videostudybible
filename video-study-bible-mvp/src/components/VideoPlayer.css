@@ -21,6 +21,30 @@
   flex: 1;
 }
 
+.video-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.video-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.15rem 0.35rem;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.video-close-btn:hover {
+  background: var(--bg-border);
+  color: var(--text-primary);
+}
+
 .current-timestamp {
   background: rgba(59, 130, 246, 0.12);
   color: var(--accent-action);

@@ -198,6 +198,35 @@
   font-weight: 300;
 }
 
+/* ── Content indicators (study mode) ── */
+.verse-indicators {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  align-self: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  margin-right: 0.25rem;
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+
+.verse:hover .verse-indicators {
+  opacity: 0.9;
+}
+
+.verse-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.verse-dot--commentary { background: #a78bfa; }
+.verse-dot--video      { background: var(--accent-action); }
+.verse-dot--note       { background: #34d399; }
+
 /* ── Chevron — appears on hover ── */
 .verse-chevron {
   flex-shrink: 0;
@@ -209,4 +238,84 @@
 
 .verse:hover .verse-chevron {
   opacity: 1;
+}
+
+/* ── Reading Mode ── */
+.bible-text.reading-mode {
+  max-height: none;
+  overflow-y: visible;
+}
+
+.reading-paragraph {
+  font-family: var(--font-ui);
+  font-size: 1.125rem;
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--text-primary);
+  margin: 0;
+  text-align: left;
+}
+
+.reading-verse {
+  display: inline;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background 0.15s;
+}
+
+.reading-verse:hover {
+  background: var(--bg-surface);
+}
+
+.reading-verse-video-icon {
+  display: inline;
+  color: var(--accent-action);
+  opacity: 0.55;
+  margin-left: 0.3em;
+  vertical-align: middle;
+  user-select: none;
+  transition: opacity 0.15s;
+}
+
+.reading-verse:hover .reading-verse-video-icon {
+  opacity: 1;
+}
+
+.reading-verse-note-icon {
+  display: inline;
+  color: #34d399;
+  opacity: 0.55;
+  margin-left: 0.25em;
+  vertical-align: middle;
+  user-select: none;
+  transition: opacity 0.15s;
+}
+
+.reading-verse:hover .reading-verse-note-icon {
+  opacity: 1;
+}
+
+.reading-verse-num {
+  font-size: 0.65em;
+  font-weight: 400;
+  color: var(--text-disabled);
+  margin-right: 0.1em;
+  vertical-align: super;
+  user-select: none;
+  line-height: 0;
+  position: relative;
+}
+
+/* Subtle dot on superscript when verse has content (reading mode) */
+.reading-verse-num.has-content::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--text-disabled);
+  opacity: 0.6;
 }

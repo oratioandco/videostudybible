@@ -93,7 +93,7 @@
   color: var(--text-primary);
 }
 
-/* ── Verse text + highlight — never shrinks ── */
+/* ── Verse text (mobile only) — never shrinks ── */
 .panel-verse-section {
   padding: 2rem 2rem 1.5rem;
   border-bottom: 1px solid var(--bg-border);
@@ -108,20 +108,27 @@
   color: var(--text-primary);
   font-weight: 300;
   text-align: center;
-  margin-bottom: 1.25rem;
 }
 
-@media (min-width: 768px) {
-  .panel-verse-text {
-    font-size: 1.75rem;
-  }
-}
-
-.panel-highlight-row {
+/* ── Action toolbar — highlights + note/audio/image shortcuts ── */
+.panel-action-bar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.625rem;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--bg-border);
+  flex-shrink: 0;
+  gap: 0.5rem;
+}
+
+.panel-action-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.panel-action-group--right {
+  margin-left: auto;
 }
 
 .highlight-dot {
@@ -156,6 +163,36 @@
 }
 
 .highlight-clear:hover {
+  color: var(--text-muted);
+}
+
+.panel-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.panel-action-btn:hover {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.panel-action-btn--stub {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.panel-action-btn--stub:hover {
+  background: none;
   color: var(--text-muted);
 }
 
@@ -224,47 +261,241 @@
 .notes-container {
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
-  height: 100%;
+  gap: 0.75rem;
 }
 
-.notes-label {
-  font-size: 0.8rem;
-  font-weight: 400;
-  color: var(--text-muted);
-  letter-spacing: 0.02em;
+.notes-empty {
+  color: var(--text-disabled);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 1.5rem 1rem 0.5rem;
 }
 
-.notes-textarea {
-  flex: 1;
-  width: 100%;
-  min-height: 200px;
+/* ── Note cards ── */
+.note-card {
   background: var(--bg-surface);
   border: 1px solid var(--bg-border);
   border-radius: 12px;
-  color: var(--text-primary);
-  font-family: var(--font-ui);
-  font-size: 1rem;
+  padding: 0.875rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.note-attachment-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+.note-attachment-badge--audio {
+  background: rgba(167, 139, 250, 0.15);
+  color: #a78bfa;
+}
+
+.note-attachment-badge--image {
+  background: rgba(96, 165, 250, 0.15);
+  color: #60a5fa;
+}
+
+.note-card-text {
+  font-size: 0.9rem;
   font-weight: 300;
-  line-height: 1.75;
-  padding: 1rem 1.125rem;
-  resize: vertical;
-  outline: none;
-  transition: border-color 0.15s;
+  color: var(--text-primary);
+  line-height: 1.65;
+  white-space: pre-wrap;
 }
 
-.notes-textarea::placeholder {
-  color: var(--text-disabled);
+.note-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.125rem;
 }
 
-.notes-textarea:focus {
-  border-color: var(--text-muted);
-}
-
-.notes-char-count {
+.note-card-date {
   font-size: 0.7rem;
   color: var(--text-disabled);
-  text-align: right;
+}
+
+.note-card-delete {
+  background: none;
+  border: none;
+  color: var(--text-disabled);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.note-card-delete:hover {
+  color: var(--text-muted);
+}
+
+/* ── Add note button ── */
+.note-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  background: none;
+  border: 1px dashed var(--bg-border);
+  border-radius: 12px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.note-add-btn:hover {
+  border-color: var(--text-muted);
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+}
+
+/* ── Composer ── */
+.note-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-border);
+  border-radius: 12px;
+  padding: 0.875rem 1rem;
+  animation: composer-expand 0.18s ease;
+}
+
+@keyframes composer-expand {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.note-composer-attachment {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: var(--bg-hover);
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  width: fit-content;
+}
+
+.note-composer-attachment-remove {
+  background: none;
+  border: none;
+  color: var(--text-disabled);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  margin-left: 0.1rem;
+  transition: color 0.15s;
+}
+
+.note-composer-attachment-remove:hover {
+  color: var(--text-muted);
+}
+
+.note-composer-textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 300;
+  line-height: 1.75;
+  resize: none;
+  outline: none;
+}
+
+.note-composer-textarea::placeholder {
+  color: var(--text-disabled);
+}
+
+.note-composer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.375rem;
+  border-top: 1px solid var(--bg-border);
+  margin-top: 0.125rem;
+}
+
+.note-composer-attachments {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.note-composer-attach-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.note-composer-attach-btn:hover,
+.note-composer-attach-btn.active {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.note-composer-submit {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.note-composer-cancel {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  transition: color 0.15s;
+}
+
+.note-composer-cancel:hover {
+  color: var(--text-secondary);
+}
+
+.note-composer-save {
+  background: var(--accent-action);
+  border: none;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  transition: opacity 0.15s;
+}
+
+.note-composer-save:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 /* ── Tablet + Desktop: sticky sidebar ── */
@@ -297,12 +528,17 @@
   }
 
   .verse-detail-panel.is-open {
-    width: 360px;
+    width: 440px;
     opacity: 1;
     pointer-events: auto;
   }
 
   .panel-handle {
+    display: none;
+  }
+
+  /* Verse preview hidden on desktop — verse is visible in context */
+  .panel-verse-section {
     display: none;
   }
 
@@ -315,6 +551,6 @@
   }
 
   .verse-detail-panel.is-open {
-    width: 380px;
+    width: 480px;
   }
 }

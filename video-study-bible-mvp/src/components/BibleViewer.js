@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, MonitorPlay, NotebookPen } from 'lucide-react';
 import './BibleViewer.css';
+
+const HIGHLIGHT_COLORS = {
+  yellow: '#fbbf24',
+  green:  '#34d399',
+  blue:   '#60a5fa',
+  purple: '#a78bfa',
+};
 
 const TRANSLATIONS = [
   { id: 'LUT', name: 'Lutherbibel 2017', abbreviation: 'LUT' },
@@ -59,7 +66,48 @@ function TranslationSwitcher({ selected, onChange }) {
   );
 }
 
-function BibleViewer({ verse, bibleText, studyData, onVerseSelect, onVideoSelect, selectedTranslation, onTranslationChange }) {
+function ReadingView({ verses, apiVerses, hasApiText, onVerseSelect, highlights, selectedVerse, studyData, notes }) {
+  return (
+    <p className="reading-paragraph">
+      {verses.map(verseNum => {
+        const verseRef = `Genesis 1:${verseNum}`;
+        const altRef = `1. Mose 1:${verseNum}`;
+        const text = hasApiText ? (apiVerses[verseNum] || '') : getVerseText(verseNum);
+        const colorId = highlights?.[verseRef];
+        const color = colorId ? HIGHLIGHT_COLORS[colorId] : null;
+        const isSelected = verseRef === selectedVerse;
+        const style = color
+          ? { background: color + '55', borderRadius: '3px', padding: '0 2px' }
+          : isSelected
+            ? { background: 'rgba(59,130,246,0.12)', borderRadius: '3px', padding: '0 2px' }
+            : {};
+
+        const g1 = studyData?.verses?.genesis1 || {};
+        const hasVideos = (g1[verseRef]?.length > 0) || (g1[altRef]?.length > 0);
+        const hasCommentary = !!(studyData?.verse_commentaries?.[altRef] || studyData?.verse_commentaries?.[verseRef]);
+        const hasNotes = (notes?.[verseRef]?.length > 0);
+        const hasContent = hasVideos || hasCommentary || hasNotes;
+
+        return (
+          <span
+            key={verseNum}
+            className="reading-verse"
+            style={style}
+            onClick={() => onVerseSelect(verseRef, text)}
+          >
+            <sup className={`reading-verse-num${hasContent ? ' has-content' : ''}`}>{verseNum}</sup>
+            {text}
+            {hasVideos && <MonitorPlay size={11} className="reading-verse-video-icon" aria-hidden="true" strokeWidth={1.5} />}
+            {hasNotes && <NotebookPen size={11} className="reading-verse-note-icon" aria-hidden="true" strokeWidth={1.5} />}
+            {' '}
+          </span>
+        );
+      })}
+    </p>
+  );
+}
+
+function BibleViewer({ verse, bibleText, studyData, onVerseSelect, onVideoSelect, selectedTranslation, onTranslationChange, viewMode, highlights, notes }) {
   const verseNums = Array.from({ length: 31 }, (_, i) => i + 1);
   const apiVerses = bibleText?.verses || {};
   const hasApiText = Object.keys(apiVerses).length > 0;
@@ -80,31 +128,54 @@ function BibleViewer({ verse, bibleText, studyData, onVerseSelect, onVideoSelect
         )}
       </div>
 
-      <div className="bible-text">
-        {verseNums.map(verseNum => {
-          const verseRef = `Genesis 1:${verseNum}`;
-          const altRef = `1. Mose 1:${verseNum}`;
-          const isSelected = verse === verseRef;
-          const g1 = studyData?.verses?.genesis1 || {};
-          const hasVideos = (g1[verseRef]?.length > 0) || (g1[altRef]?.length > 0);
-          const text = hasApiText ? (apiVerses[verseNum] || '') : getVerseText(verseNum);
+      <div className={`bible-text${viewMode === 'reading' ? ' reading-mode' : ''}`}>
+        {viewMode === 'reading' ? (
+          <ReadingView
+            verses={verseNums}
+            apiVerses={apiVerses}
+            hasApiText={hasApiText}
+            onVerseSelect={onVerseSelect}
+            highlights={highlights}
+            selectedVerse={verse}
+            studyData={studyData}
+            notes={notes}
+          />
+        ) : (
+          verseNums.map(verseNum => {
+            const verseRef = `Genesis 1:${verseNum}`;
+            const altRef = `1. Mose 1:${verseNum}`;
+            const isSelected = verse === verseRef;
+            const g1 = studyData?.verses?.genesis1 || {};
+            const hasVideos = (g1[verseRef]?.length > 0) || (g1[altRef]?.length > 0);
+            const hasCommentary = !!(studyData?.verse_commentaries?.[altRef] || studyData?.verse_commentaries?.[verseRef]);
+            const hasNotes = (notes?.[verseRef]?.length > 0);
+            const text = hasApiText ? (apiVerses[verseNum] || '') : getVerseText(verseNum);
+            const colorId = highlights?.[verseRef];
+            const highlightColor = colorId ? HIGHLIGHT_COLORS[colorId] : null;
 
-          return (
-            <div
-              key={verseNum}
-              className={`verse ${isSelected ? 'selected' : ''} ${hasVideos ? 'has-videos' : ''}`}
-              onClick={() => onVerseSelect(verseRef, text)}
-            >
-              <span className="verse-number">{verseNum}</span>
-              <span className="verse-text">
-                {text}
-              </span>
-              <span className="verse-chevron" aria-hidden="true">
-                <ChevronRight size={14} />
-              </span>
-            </div>
-          );
-        })}
+            return (
+              <div
+                key={verseNum}
+                className={`verse ${isSelected ? 'selected' : ''} ${hasVideos ? 'has-videos' : ''}`}
+                style={highlightColor ? { background: highlightColor + '33', borderRadius: '12px' } : {}}
+                onClick={() => onVerseSelect(verseRef, text)}
+              >
+                <span className="verse-number">{verseNum}</span>
+                <span className="verse-text">{text}</span>
+                {(hasVideos || hasCommentary || hasNotes) && (
+                  <span className="verse-indicators" aria-hidden="true">
+                    {hasCommentary && <span className="verse-dot verse-dot--commentary" title="Kommentar" />}
+                    {hasVideos    && <span className="verse-dot verse-dot--video"       title="Videos"    />}
+                    {hasNotes     && <span className="verse-dot verse-dot--note"        title="Notizen"   />}
+                  </span>
+                )}
+                <span className="verse-chevron" aria-hidden="true">
+                  <ChevronRight size={14} />
+                </span>
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
   );

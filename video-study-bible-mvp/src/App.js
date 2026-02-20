@@ -4,7 +4,7 @@ import BibleViewer from './components/BibleViewer';
 import VideoPlayer from './components/VideoPlayer';
 import VerseDetailPanel from './components/VerseDetailPanel';
 import SearchBar from './components/SearchBar';
-import { Book, Play, Sun, Moon, BookOpen } from 'lucide-react';
+import { Book, Play, Sun, Moon, BookOpen, BookText, SlidersHorizontal, Check } from 'lucide-react';
 
 const DEFAULT_TRANSLATION = { id: 'LUT', name: 'Lutherbibel 2017', abbreviation: 'LUT' };
 
@@ -13,6 +13,10 @@ function App() {
     // Default to dark to match previous behaviour; user can toggle
     const saved = localStorage.getItem('vsb-theme');
     return saved || 'dark';
+  });
+  const [viewMode, setViewMode] = useState(() => {
+    const saved = localStorage.getItem('vsb-view-mode');
+    return (saved === 'reading' || saved === 'study') ? saved : 'study';
   });
   const [studyData, setStudyData] = useState(null);
   const [selectedVerse, setSelectedVerse] = useState(null);
@@ -24,6 +28,9 @@ function App() {
   const [bibleText, setBibleText] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedTranslation, setSelectedTranslation] = useState(DEFAULT_TRANSLATION);
+  const [highlights, setHighlights] = useState({}); // { verseRef: colorId | null }
+  const [notes, setNotes] = useState({}); // { verseRef: Note[] }
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const sessionUUIDRef = useRef(null);
 
   // Apply theme class to <html>
@@ -34,9 +41,9 @@ function App() {
     localStorage.setItem('vsb-theme', theme);
   }, [theme]);
 
-  const cycleTheme = () => {
-    setTheme(t => t === 'dark' ? 'light' : t === 'light' ? 'sepia' : 'dark');
-  };
+  useEffect(() => {
+    localStorage.setItem('vsb-view-mode', viewMode);
+  }, [viewMode]);
 
   // Load study Bible data
   useEffect(() => {
@@ -119,6 +126,30 @@ function App() {
     setCurrentTimestamp(timestamp);
   };
 
+  const handleCloseVideo = () => {
+    setCurrentVideo(null);
+    setCurrentTimestamp(0);
+    setCurrentClipEnd(null);
+  };
+
+  const handleHighlight = (verseRef, colorId) => {
+    setHighlights(prev => ({ ...prev, [verseRef]: colorId }));
+  };
+
+  const handleAddNote = (verseRef, note) => {
+    setNotes(prev => ({
+      ...prev,
+      [verseRef]: [...(prev[verseRef] || []), note],
+    }));
+  };
+
+  const handleDeleteNote = (verseRef, noteId) => {
+    setNotes(prev => ({
+      ...prev,
+      [verseRef]: (prev[verseRef] || []).filter(n => n.id !== noteId),
+    }));
+  };
+
   if (loading) {
     return (
       <div className="loading">
@@ -143,14 +174,66 @@ function App() {
               onVerseSelect={handleVerseSelect}
               onVideoSelect={handleVideoSelect}
             />
-            <button
-              className="theme-toggle"
-              onClick={cycleTheme}
-              aria-label={`Theme: ${theme}`}
-              title={theme === 'dark' ? 'Helles Design' : theme === 'light' ? 'Sepia' : 'Dunkles Design'}
-            >
-              {theme === 'dark' ? <Sun size={16} /> : theme === 'light' ? <BookOpen size={16} /> : <Moon size={16} />}
-            </button>
+            <div className="settings-menu">
+              <button
+                className={`settings-btn ${settingsOpen ? 'active' : ''}`}
+                onClick={() => setSettingsOpen(o => !o)}
+                aria-label="Anzeigeeinstellungen"
+              >
+                <SlidersHorizontal size={14} />
+                <span>Ansicht</span>
+              </button>
+              {settingsOpen && (
+                <>
+                  <div className="settings-backdrop" onClick={() => setSettingsOpen(false)} />
+                  <div className="settings-dropdown">
+                    <p className="settings-section-label">Modus</p>
+                    <button
+                      className={`settings-option ${viewMode === 'study' ? 'active' : ''}`}
+                      onClick={() => { setViewMode('study'); setSettingsOpen(false); }}
+                    >
+                      <BookOpen size={14} />
+                      Studienmodus
+                      {viewMode === 'study' && <Check size={13} className="settings-check" />}
+                    </button>
+                    <button
+                      className={`settings-option ${viewMode === 'reading' ? 'active' : ''}`}
+                      onClick={() => { setViewMode('reading'); setSettingsOpen(false); }}
+                    >
+                      <BookText size={14} />
+                      Lesemodus
+                      {viewMode === 'reading' && <Check size={13} className="settings-check" />}
+                    </button>
+                    <div className="settings-divider" />
+                    <p className="settings-section-label">Design</p>
+                    <button
+                      className={`settings-option ${theme === 'dark' ? 'active' : ''}`}
+                      onClick={() => { setTheme('dark'); setSettingsOpen(false); }}
+                    >
+                      <Moon size={14} />
+                      Dunkel
+                      {theme === 'dark' && <Check size={13} className="settings-check" />}
+                    </button>
+                    <button
+                      className={`settings-option ${theme === 'light' ? 'active' : ''}`}
+                      onClick={() => { setTheme('light'); setSettingsOpen(false); }}
+                    >
+                      <Sun size={14} />
+                      Hell
+                      {theme === 'light' && <Check size={13} className="settings-check" />}
+                    </button>
+                    <button
+                      className={`settings-option ${theme === 'sepia' ? 'active' : ''}`}
+                      onClick={() => { setTheme('sepia'); setSettingsOpen(false); }}
+                    >
+                      <Book size={14} />
+                      Sepia
+                      {theme === 'sepia' && <Check size={13} className="settings-check" />}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -165,13 +248,9 @@ function App() {
               timestamp={currentTimestamp}
               endTime={currentClipEnd}
               onTimestampChange={setCurrentTimestamp}
+              onClose={handleCloseVideo}
             />
-          ) : (
-            <div className="video-placeholder">
-              <Book size={32} className="placeholder-icon" />
-              <p>Wähle einen Vers aus,<br />um Videos abzuspielen</p>
-            </div>
-          )}
+          ) : null}
         </div>
 
         {/* Center col: Bible reader */}
@@ -184,6 +263,9 @@ function App() {
             onVideoSelect={handleVideoSelect}
             selectedTranslation={selectedTranslation}
             onTranslationChange={setSelectedTranslation}
+            viewMode={viewMode}
+            highlights={highlights}
+            notes={notes}
           />
         </div>
 
@@ -197,6 +279,11 @@ function App() {
           onVideoSelect={handleVideoSelect}
           onTimestampClick={handleTimestampClick}
           onVerseSelect={handleVerseSelect}
+          highlights={highlights}
+          onHighlight={handleHighlight}
+          notes={notes}
+          onAddNote={handleAddNote}
+          onDeleteNote={handleDeleteNote}
         />
       </div>
 
