@@ -259,8 +259,6 @@ function App() {
             studyData={studyData}
             onVerseSelect={handleVerseSelect}
             onVideoSelect={handleVideoSelect}
-            selectedTranslation={selectedTranslation}
-            onTranslationChange={setSelectedTranslation}
             viewMode={viewMode}
             highlights={highlights}
             notes={notes}

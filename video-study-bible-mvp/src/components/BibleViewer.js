@@ -107,11 +107,10 @@ function ReadingView({ verses, apiVerses, hasApiText, onVerseSelect, highlights,
   );
 }
 
-function BibleViewer({ verse, bibleText, studyData, onVerseSelect, onVideoSelect, selectedTranslation, onTranslationChange, viewMode, highlights, notes }) {
+function BibleViewer({ verse, bibleText, studyData, onVerseSelect, onVideoSelect, viewMode, highlights, notes }) {
   const verseNums = Array.from({ length: 31 }, (_, i) => i + 1);
   const apiVerses = bibleText?.verses || {};
   const hasApiText = Object.keys(apiVerses).length > 0;
-  const currentTranslation = selectedTranslation || TRANSLATIONS[0];
 
   return (
     <div className="bible-viewer">
