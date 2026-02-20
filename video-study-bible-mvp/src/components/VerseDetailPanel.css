@@ -43,6 +43,12 @@
   transform: translateY(0);
 }
 
+/* Expand to full height when note composer is open so action bar stays above keyboard */
+.verse-detail-panel.composer-open {
+  height: 100dvh;
+  border-radius: 0;
+}
+
 /* ── Panel header — never shrinks ── */
 .panel-header {
   display: flex;
@@ -373,6 +379,8 @@
   border-radius: 12px;
   padding: 0.875rem 1rem;
   animation: composer-expand 0.18s ease;
+  flex: 1;
+  min-height: 0;
 }
 
 @keyframes composer-expand {
@@ -419,6 +427,8 @@
   line-height: 1.75;
   resize: none;
   outline: none;
+  min-height: 80px;
+  flex: 1;
 }
 
 .note-composer-textarea::placeholder {

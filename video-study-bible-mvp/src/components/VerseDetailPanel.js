@@ -99,7 +99,7 @@ function VerseDetailPanel({
 
       {/* Panel */}
       <div
-        className={`verse-detail-panel ${isOpen ? 'is-open' : ''}`}
+        className={`verse-detail-panel ${isOpen ? 'is-open' : ''} ${composerOpen ? 'composer-open' : ''}`}
         role="complementary"
         aria-label="Vers-Details"
       >
