@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
-import BibleViewer from './components/BibleViewer';
+import BibleViewer, { TranslationSwitcher } from './components/BibleViewer';
 import VideoPlayer from './components/VideoPlayer';
 import VerseDetailPanel from './components/VerseDetailPanel';
-import SearchBar from './components/SearchBar';
 import { Book, Play, Sun, Moon, BookOpen, BookText, SlidersHorizontal, Check } from 'lucide-react';
 
 const DEFAULT_TRANSLATION = { id: 'LUT', name: 'Lutherbibel 2017', abbreviation: 'LUT' };
@@ -169,10 +168,9 @@ function App() {
             <span className="beta-badge">Beta</span>
           </div>
           <div className="header-right">
-            <SearchBar
-              studyData={studyData}
-              onVerseSelect={handleVerseSelect}
-              onVideoSelect={handleVideoSelect}
+            <TranslationSwitcher
+              selected={selectedTranslation}
+              onChange={setSelectedTranslation}
             />
             <div className="settings-menu">
               <button

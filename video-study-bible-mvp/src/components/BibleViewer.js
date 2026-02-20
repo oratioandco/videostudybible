@@ -117,14 +117,8 @@ function BibleViewer({ verse, bibleText, studyData, onVerseSelect, onVideoSelect
     <div className="bible-viewer">
       <div className="bible-header">
         <h2>Genesis 1</h2>
-        <TranslationSwitcher
-          selected={currentTranslation}
-          onChange={onTranslationChange}
-        />
-        {!hasApiText ? (
+        {!hasApiText && (
           <p className="bible-loading-hint">Wird geladen…</p>
-        ) : (
-          <p className="translation">{currentTranslation.name}</p>
         )}
       </div>
 
@@ -219,4 +213,5 @@ function getVerseText(verseNum) {
   return genesis1[verseNum] || '';
 }
 
+export { TranslationSwitcher };
 export default BibleViewer;

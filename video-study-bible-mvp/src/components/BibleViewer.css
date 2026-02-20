@@ -137,8 +137,6 @@
 /* ── Verse Text Area ── */
 .bible-text {
   padding: 1rem 1.5rem 2rem;
-  max-height: calc(100vh - 240px);
-  overflow-y: auto;
 }
 
 /* ── Individual Verse ── */
