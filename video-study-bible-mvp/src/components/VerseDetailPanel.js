@@ -65,6 +65,7 @@ function VerseDetailPanel({
   useEffect(() => {
     if (composerOpen && composerRef.current) {
       composerRef.current.focus();
+      composerRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   }, [composerOpen]);
 
@@ -126,8 +127,8 @@ function VerseDetailPanel({
           </button>
         </div>
 
-        {/* ── Verse text (mobile only — hidden on desktop via CSS) ── */}
-        {verseText && (
+        {/* ── Verse text (mobile only — hidden on desktop via CSS, collapsed when composer open) ── */}
+        {verseText && !composerOpen && (
           <div
             className="panel-verse-section"
             style={activeHighlight ? { background: activeHighlight.color + '22', borderColor: activeHighlight.color + '55' } : {}}

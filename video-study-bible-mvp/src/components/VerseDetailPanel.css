@@ -30,7 +30,8 @@
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
   z-index: 99;
-  height: 88vh;
+  /* dvh shrinks when the software keyboard appears, keeping composer visible */
+  height: 88dvh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
