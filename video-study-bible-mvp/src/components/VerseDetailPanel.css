@@ -245,6 +245,20 @@
   border-bottom-color: var(--accent-action);
 }
 
+.panel-tab-count {
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background: var(--accent-action);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  margin-left: 2px;
+}
+
 /* ── Panel body — fills all remaining space, only thing that scrolls ── */
 .panel-body {
   flex: 1;

@@ -66,44 +66,76 @@ function TranslationSwitcher({ selected, onChange }) {
   );
 }
 
-function ReadingView({ verses, apiVerses, hasApiText, onVerseSelect, highlights, selectedVerse, studyData, notes }) {
+// Semantic paragraph groups for Genesis 1 — keyed by first verse of each group.
+// Label is shown as a subtle section heading above the paragraph.
+const GENESIS_1_PARAGRAPHS = [
+  { label: null,       verses: [1, 2] },
+  { label: 'Tag 1',   verses: [3, 4, 5] },
+  { label: 'Tag 2',   verses: [6, 7, 8] },
+  { label: 'Tag 3',   verses: [9, 10, 11, 12, 13] },
+  { label: 'Tag 4',   verses: [14, 15, 16, 17, 18, 19] },
+  { label: 'Tag 5',   verses: [20, 21, 22, 23] },
+  { label: 'Tag 6',   verses: [24, 25, 26, 27, 28, 29, 30, 31] },
+];
+
+function ReadingVerseSpan({ verseNum, apiVerses, hasApiText, highlights, selectedVerse, studyData, notes, onVerseSelect }) {
+  const verseRef = `Genesis 1:${verseNum}`;
+  const altRef = `1. Mose 1:${verseNum}`;
+  const text = hasApiText ? (apiVerses[verseNum] || '') : getVerseText(verseNum);
+  const colorId = highlights?.[verseRef];
+  const color = colorId ? HIGHLIGHT_COLORS[colorId] : null;
+  const isSelected = verseRef === selectedVerse;
+  const style = color
+    ? { background: color + '55', borderRadius: '3px', padding: '0 2px' }
+    : { borderRadius: '3px', padding: '0 2px' };
+
+  const g1 = studyData?.verses?.genesis1 || {};
+  const hasVideos = (g1[verseRef]?.length > 0) || (g1[altRef]?.length > 0);
+  const hasCommentary = !!(studyData?.verse_commentaries?.[altRef] || studyData?.verse_commentaries?.[verseRef]);
+  const hasNotes = (notes?.[verseRef]?.length > 0);
+  const hasContent = hasVideos || hasCommentary || hasNotes;
+
   return (
-    <p className="reading-paragraph">
-      {verses.map(verseNum => {
-        const verseRef = `Genesis 1:${verseNum}`;
-        const altRef = `1. Mose 1:${verseNum}`;
-        const text = hasApiText ? (apiVerses[verseNum] || '') : getVerseText(verseNum);
-        const colorId = highlights?.[verseRef];
-        const color = colorId ? HIGHLIGHT_COLORS[colorId] : null;
-        const isSelected = verseRef === selectedVerse;
-        const style = color
-          ? { background: color + '55', borderRadius: '3px', padding: '0 2px' }
-          : isSelected
-            ? { background: 'rgba(59,130,246,0.12)', borderRadius: '3px', padding: '0 2px' }
-            : {};
+    <span
+      className={`reading-verse${isSelected ? ' selected' : ''}`}
+      style={style}
+      onClick={() => onVerseSelect(verseRef, text)}
+    >
+      <sup className={`reading-verse-num${hasContent ? ' has-content' : ''}`}>{verseNum}</sup>
+      {text}
+      {hasVideos && <MonitorPlay size={11} className="reading-verse-video-icon" aria-hidden="true" strokeWidth={1.5} />}
+      {hasNotes && <NotebookPen size={11} className="reading-verse-note-icon" aria-hidden="true" strokeWidth={1.5} />}
+      {' '}
+    </span>
+  );
+}
 
-        const g1 = studyData?.verses?.genesis1 || {};
-        const hasVideos = (g1[verseRef]?.length > 0) || (g1[altRef]?.length > 0);
-        const hasCommentary = !!(studyData?.verse_commentaries?.[altRef] || studyData?.verse_commentaries?.[verseRef]);
-        const hasNotes = (notes?.[verseRef]?.length > 0);
-        const hasContent = hasVideos || hasCommentary || hasNotes;
-
-        return (
-          <span
-            key={verseNum}
-            className="reading-verse"
-            style={style}
-            onClick={() => onVerseSelect(verseRef, text)}
-          >
-            <sup className={`reading-verse-num${hasContent ? ' has-content' : ''}`}>{verseNum}</sup>
-            {text}
-            {hasVideos && <MonitorPlay size={11} className="reading-verse-video-icon" aria-hidden="true" strokeWidth={1.5} />}
-            {hasNotes && <NotebookPen size={11} className="reading-verse-note-icon" aria-hidden="true" strokeWidth={1.5} />}
-            {' '}
-          </span>
-        );
-      })}
-    </p>
+function ReadingView({ apiVerses, hasApiText, onVerseSelect, highlights, selectedVerse, studyData, notes }) {
+  return (
+    <div className="reading-paragraphs">
+      {GENESIS_1_PARAGRAPHS.map((group, gi) => (
+        <div key={gi} className="reading-group">
+          {group.label && (
+            <p className="reading-day-label">{group.label}</p>
+          )}
+          <p className="reading-paragraph">
+            {group.verses.map(verseNum => (
+              <ReadingVerseSpan
+                key={verseNum}
+                verseNum={verseNum}
+                apiVerses={apiVerses}
+                hasApiText={hasApiText}
+                highlights={highlights}
+                selectedVerse={selectedVerse}
+                studyData={studyData}
+                notes={notes}
+                onVerseSelect={onVerseSelect}
+              />
+            ))}
+          </p>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -124,7 +156,6 @@ function BibleViewer({ verse, bibleText, studyData, onVerseSelect, onVideoSelect
       <div className={`bible-text${viewMode === 'reading' ? ' reading-mode' : ''}`}>
         {viewMode === 'reading' ? (
           <ReadingView
-            verses={verseNums}
             apiVerses={apiVerses}
             hasApiText={hasApiText}
             onVerseSelect={onVerseSelect}

@@ -161,9 +161,9 @@
 }
 
 .verse.selected {
-  background: rgba(59, 130, 246, 0.08);
-  outline: 1px solid rgba(59, 130, 246, 0.2);
-  outline-offset: -1px;
+  outline: 2px solid rgba(59, 130, 246, 0.55);
+  outline-offset: -2px;
+  box-shadow: inset 3px 0 0 var(--accent-action);
 }
 
 /* ── Verse Number ── */
@@ -244,6 +244,27 @@
   overflow-y: visible;
 }
 
+.reading-paragraphs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.reading-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.reading-day-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-disabled);
+  margin: 0;
+}
+
 .reading-paragraph {
   font-family: var(--font-ui);
   font-size: 1.125rem;
@@ -265,32 +286,26 @@
   background: var(--bg-surface);
 }
 
-.reading-verse-video-icon {
-  display: inline;
-  color: var(--accent-action);
-  opacity: 0.55;
-  margin-left: 0.3em;
-  vertical-align: middle;
-  user-select: none;
-  transition: opacity 0.15s;
+.reading-verse.selected {
+  outline: 2px solid rgba(59, 130, 246, 0.6);
+  outline-offset: 1px;
 }
 
-.reading-verse:hover .reading-verse-video-icon {
-  opacity: 1;
-}
-
+.reading-verse-video-icon,
 .reading-verse-note-icon {
   display: inline;
-  color: #34d399;
-  opacity: 0.55;
+  color: var(--text-muted);
+  opacity: 0.6;
   margin-left: 0.25em;
   vertical-align: middle;
   user-select: none;
-  transition: opacity 0.15s;
+  transition: opacity 0.15s, color 0.15s;
 }
 
+.reading-verse:hover .reading-verse-video-icon,
 .reading-verse:hover .reading-verse-note-icon {
   opacity: 1;
+  color: var(--text-secondary);
 }
 
 .reading-verse-num {

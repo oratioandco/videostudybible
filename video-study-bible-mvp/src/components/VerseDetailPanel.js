@@ -193,16 +193,20 @@ function VerseDetailPanel({
         {/* ── Tabs ── */}
         {verseRef && (
         <div className="panel-tabs">
-          {TABS.map(({ id, icon: Icon, label }) => (
-            <button
-              key={id}
-              className={`panel-tab ${activeTab === id ? 'active' : ''}`}
-              onClick={() => setActiveTab(id)}
-            >
-              <Icon size={13} />
-              {label}
-            </button>
-          ))}
+          {TABS.map(({ id, icon: Icon, label }) => {
+            const count = id === 'notes' ? verseNotes.length : 0;
+            return (
+              <button
+                key={id}
+                className={`panel-tab ${activeTab === id ? 'active' : ''}`}
+                onClick={() => setActiveTab(id)}
+              >
+                <Icon size={13} />
+                {label}
+                {count > 0 && <span className="panel-tab-count">{count}</span>}
+              </button>
+            );
+          })}
         </div>
         )}
 

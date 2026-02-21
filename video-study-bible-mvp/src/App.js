@@ -4,7 +4,8 @@ import BibleViewer, { TranslationSwitcher } from './components/BibleViewer';
 import VideoPlayer from './components/VideoPlayer';
 import VerseDetailPanel from './components/VerseDetailPanel';
 import HomeScreen from './components/HomeScreen';
-import { Book, Play, Sun, Moon, BookOpen, BookText, SlidersHorizontal, Check, Home } from 'lucide-react';
+import AudioBible from './components/AudioBible';
+import { Book, Play, Sun, Moon, BookOpen, BookText, Home, Headphones } from 'lucide-react';
 
 const DEFAULT_TRANSLATION = { id: 'LUT', name: 'Lutherbibel 2017', abbreviation: 'LUT' };
 
@@ -19,20 +20,40 @@ function App() {
     return (saved === 'reading' || saved === 'study') ? saved : 'study';
   });
   const [studyData, setStudyData] = useState(null);
-  const [selectedVerse, setSelectedVerse] = useState(null);
+  const [selectedVerse, setSelectedVerse] = useState('Genesis 1:1');
   const [selectedVerseText, setSelectedVerseText] = useState(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isDetailOpen, setIsDetailOpen] = useState(true);
   const [currentVideo, setCurrentVideo] = useState(null);
   const [currentTimestamp, setCurrentTimestamp] = useState(0);
   const [currentClipEnd, setCurrentClipEnd] = useState(null);
   const [bibleText, setBibleText] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedTranslation, setSelectedTranslation] = useState(DEFAULT_TRANSLATION);
-  const [highlights, setHighlights] = useState({}); // { verseRef: colorId | null }
-  const [notes, setNotes] = useState({}); // { verseRef: Note[] }
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [page, setPage] = useState('home'); // 'home' | 'bible'
+  const [highlights, setHighlights] = useState({
+    'Genesis 1:1':  'yellow',
+    'Genesis 1:3':  'green',
+    'Genesis 1:5':  'blue',
+    'Genesis 1:10': 'purple',
+    'Genesis 1:14': 'yellow',
+    'Genesis 1:26': 'green',
+    'Genesis 1:27': 'blue',
+    'Genesis 1:31': 'purple',
+  });
+  const [notes, setNotes] = useState({
+    'Genesis 1:1': [
+      { id: 'demo-1', text: 'Der Anfang aller Dinge — „bara" (schaffen) beschreibt ein souveränes Handeln Gottes, das kein Vorbild braucht.' },
+    ],
+    'Genesis 1:3': [
+      { id: 'demo-2', text: 'Licht vor Sonne und Mond — ein Hinweis darauf, dass Gott selbst die Quelle des Lichts ist (vgl. Offb 22:5).' },
+    ],
+    'Genesis 1:27': [
+      { id: 'demo-3', text: 'Imago Dei: Mann und Frau gemeinsam spiegeln das Bild Gottes wider. Einzigartiger Würdebegriff im antiken Kontext.' },
+      { id: 'demo-4', text: 'Vergleich mit dem babylonischen Schöpfungsmythos Enuma Elisch: dort ist der Mensch Sklave der Götter — hier Ebenbild.' },
+    ],
+  });
+  const [page, setPage] = useState('home'); // 'home' | 'bible' | 'audio'
   const sessionUUIDRef = useRef(null);
+  const homeContainerRef = useRef(null);
 
   // Apply theme class to <html>
   useEffect(() => {
@@ -172,17 +193,24 @@ function App() {
           <nav className="page-nav">
             <button
               className={`page-nav-btn ${page === 'home' ? 'active' : ''}`}
-              onClick={() => setPage('home')}
+              onClick={() => { setPage('home'); setTimeout(() => homeContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' }), 0); }}
             >
               <Home size={14} />
               <span>Home</span>
+            </button>
+            <button
+              className={`page-nav-btn ${page === 'audio' ? 'active' : ''}`}
+              onClick={() => setPage('audio')}
+            >
+              <Headphones size={14} />
+              <span>Hören</span>
             </button>
             <button
               className={`page-nav-btn ${page === 'bible' ? 'active' : ''}`}
               onClick={() => setPage('bible')}
             >
               <BookOpen size={14} />
-              <span>Genesis 1</span>
+              <span>Bibel</span>
             </button>
           </nav>
           <div className="header-right">
@@ -192,76 +220,70 @@ function App() {
                 onChange={setSelectedTranslation}
               />
             )}
-            <div className="settings-menu">
+
+            {/* Mode toggle: Studienmodus / Lesemodus — only in Bibel */}
+            {page === 'bible' && (
+            <div className="view-toggle" aria-label="Anzeigemodus">
               <button
-                className={`settings-btn ${settingsOpen ? 'active' : ''}`}
-                onClick={() => setSettingsOpen(o => !o)}
-                aria-label="Anzeigeeinstellungen"
+                className={`view-toggle-btn ${viewMode === 'study' ? 'active' : ''}`}
+                onClick={() => setViewMode('study')}
+                title="Studienmodus"
               >
-                <SlidersHorizontal size={14} />
-                <span>Ansicht</span>
+                <BookOpen size={14} />
+                <span>Studie</span>
               </button>
-              {settingsOpen && (
-                <>
-                  <div className="settings-backdrop" onClick={() => setSettingsOpen(false)} />
-                  <div className="settings-dropdown">
-                    <p className="settings-section-label">Modus</p>
-                    <button
-                      className={`settings-option ${viewMode === 'study' ? 'active' : ''}`}
-                      onClick={() => { setViewMode('study'); setSettingsOpen(false); }}
-                    >
-                      <BookOpen size={14} />
-                      Studienmodus
-                      {viewMode === 'study' && <Check size={13} className="settings-check" />}
-                    </button>
-                    <button
-                      className={`settings-option ${viewMode === 'reading' ? 'active' : ''}`}
-                      onClick={() => { setViewMode('reading'); setSettingsOpen(false); }}
-                    >
-                      <BookText size={14} />
-                      Lesemodus
-                      {viewMode === 'reading' && <Check size={13} className="settings-check" />}
-                    </button>
-                    <div className="settings-divider" />
-                    <p className="settings-section-label">Design</p>
-                    <button
-                      className={`settings-option ${theme === 'dark' ? 'active' : ''}`}
-                      onClick={() => { setTheme('dark'); setSettingsOpen(false); }}
-                    >
-                      <Moon size={14} />
-                      Dunkel
-                      {theme === 'dark' && <Check size={13} className="settings-check" />}
-                    </button>
-                    <button
-                      className={`settings-option ${theme === 'light' ? 'active' : ''}`}
-                      onClick={() => { setTheme('light'); setSettingsOpen(false); }}
-                    >
-                      <Sun size={14} />
-                      Hell
-                      {theme === 'light' && <Check size={13} className="settings-check" />}
-                    </button>
-                    <button
-                      className={`settings-option ${theme === 'sepia' ? 'active' : ''}`}
-                      onClick={() => { setTheme('sepia'); setSettingsOpen(false); }}
-                    >
-                      <Book size={14} />
-                      Sepia
-                      {theme === 'sepia' && <Check size={13} className="settings-check" />}
-                    </button>
-                  </div>
-                </>
-              )}
+              <button
+                className={`view-toggle-btn ${viewMode === 'reading' ? 'active' : ''}`}
+                onClick={() => setViewMode('reading')}
+                title="Lesemodus"
+              >
+                <BookText size={14} />
+                <span>Lesen</span>
+              </button>
+            </div>
+            )}
+
+            {/* Theme toggle: Dunkel / Hell / Sepia */}
+            <div className="view-toggle" aria-label="Farbschema">
+              <button
+                className={`view-toggle-btn ${theme === 'dark' ? 'active' : ''}`}
+                onClick={() => setTheme('dark')}
+                title="Dunkles Design"
+              >
+                <Moon size={14} />
+              </button>
+              <button
+                className={`view-toggle-btn ${theme === 'light' ? 'active' : ''}`}
+                onClick={() => setTheme('light')}
+                title="Helles Design"
+              >
+                <Sun size={14} />
+              </button>
+              <button
+                className={`view-toggle-btn ${theme === 'sepia' ? 'active' : ''}`}
+                onClick={() => setTheme('sepia')}
+                title="Sepia-Design"
+              >
+                <Book size={14} />
+              </button>
             </div>
           </div>
         </div>
       </header>
 
       {page === 'home' && (
-        <div className="home-container">
+        <div className="home-container" ref={homeContainerRef}>
           <HomeScreen
             onBibleOpen={() => setPage('bible')}
             onVideoSelect={handleVideoSelect}
+            onAudioOpen={() => setPage('audio')}
           />
+        </div>
+      )}
+
+      {page === 'audio' && (
+        <div className="home-container">
+          <AudioBible />
         </div>
       )}
 

@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
-import { Play, BookOpen, ChevronRight, Flame, Heart, Anchor, Sunrise, Users, Leaf, Star, ArrowRight } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Play, BookOpen, ChevronRight, Flame, Heart, Anchor, Sunrise, Users, Leaf, Star, ArrowRight, Sparkles, Send, BookMarked, CheckCircle2, Circle, Headphones } from 'lucide-react';
 import './HomeScreen.css';
 
-// ── Simulated data (mirrors real BibleTV catalogue structure) ──────────────
+// ── Simulated data ───────────────────────────────────────────────────────────
 
 const VERSE_OF_DAY = {
   ref: 'Jeremia 29:11',
   text: 'Denn ich weiß wohl, was ich für Gedanken über euch habe, spricht der HERR: Gedanken des Friedens und nicht des Leides, euch eine Zukunft und eine Hoffnung zu geben.',
   clips: 3,
+};
+
+const DAILY_REFLECTION = {
+  text: 'Gottes Gedanken für unser Leben sind Gedanken des Friedens – auch wenn wir die Umstände nicht verstehen. Dieses Versprechen wurde an ein Volk in der Verbannung gegeben, und doch trägt es eine universelle Wahrheit: In jeder Situation hält Gott die Zukunft in seinen Händen. Vertrauen heißt nicht, alles zu verstehen, sondern zu wissen, wer führt.',
+  source: 'KI-Reflexion',
 };
 
 const SERMON_OF_DAY = {
@@ -19,6 +24,52 @@ const SERMON_OF_DAY = {
   video_file: 'Geschaffen_nach_dem_Bild_Gottes_332835.mp4',
   description: 'Was bedeutet es, als Ebenbild Gottes erschaffen zu sein? Eine tiefe Betrachtung über Würde, Berufung und unsere Beziehung zu Gott.',
   category: 'Schöpfung',
+};
+
+const READING_PLANS = {
+  active: {
+    id: 'biz',
+    title: 'Bibel in einem Jahr',
+    day: 52,
+    total: 365,
+    todayRef: '2. Mose 3–4',
+    todayDone: false,
+    color: '#3b82f6',
+  },
+  catalog: [
+    {
+      id: 'liturgisch',
+      title: 'Liturgischer Kalender',
+      subtitle: 'Kirchenjahr 2026',
+      duration: 'Ganzjährig',
+      icon: '✦',
+      color: '#8b5cf6',
+    },
+    {
+      id: 'thematisch',
+      title: 'Thematisch: Glaube & Zweifel',
+      subtitle: '8 Wochen · 56 Texte',
+      duration: '8 Wochen',
+      icon: '⚓',
+      color: '#f59e0b',
+    },
+    {
+      id: 'psalmen',
+      title: 'Die Psalmen',
+      subtitle: '150 Psalmen in 30 Tagen',
+      duration: '30 Tage',
+      icon: '♪',
+      color: '#10b981',
+    },
+    {
+      id: 'evangelien',
+      title: 'Die vier Evangelien',
+      subtitle: 'Jesus in seinem Leben & Wirken',
+      duration: '6 Wochen',
+      icon: '✝',
+      color: '#ec4899',
+    },
+  ],
 };
 
 const TOPIC_ROWS = [
@@ -106,7 +157,140 @@ const SPEAKERS = [
   { name: 'Christengemeinde Elim', avatar: null, role: 'Hamburg', clips: 22 },
 ];
 
+// Simulated AI search results based on mood keywords
+const AI_SEARCH_SUGGESTIONS = [
+  { label: 'Angst & Sorge', icon: '😔' },
+  { label: 'Dankbarkeit', icon: '🙏' },
+  { label: 'Trauer', icon: '💙' },
+  { label: 'Zweifel', icon: '🤔' },
+  { label: 'Hoffnung', icon: '✨' },
+  { label: 'Kraft', icon: '💪' },
+];
+
 // ── Sub-components ──────────────────────────────────────────────────────────
+
+function MoodSearch({ onVideoSelect }) {
+  const [query, setQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [results, setResults] = useState(null);
+  const inputRef = useRef(null);
+
+  const handleSearch = async (searchQuery) => {
+    const q = searchQuery || query;
+    if (!q.trim()) return;
+
+    setIsLoading(true);
+    setResults(null);
+
+    // Simulate AI response with delay
+    await new Promise(r => setTimeout(r, 1200));
+
+    setResults({
+      message: `Hier sind Clips, die zu „${q}" passen könnten:`,
+      clips: TOPIC_ROWS[0].clips.slice(0, 3),
+    });
+    setIsLoading(false);
+  };
+
+  const handleSuggestion = (suggestion) => {
+    setQuery(suggestion.label);
+    handleSearch(suggestion.label);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') handleSearch();
+  };
+
+  return (
+    <div className="mood-search">
+      <div className="mood-search-input-row">
+        <Sparkles size={16} className="mood-search-icon" />
+        <input
+          ref={inputRef}
+          type="text"
+          className="mood-search-input"
+          placeholder="Was beschäftigt dich heute?"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+        <button
+          className="mood-search-send"
+          onClick={() => handleSearch()}
+          disabled={!query.trim() || isLoading}
+          aria-label="Suchen"
+        >
+          <Send size={14} />
+        </button>
+      </div>
+
+      {!results && !isLoading && (
+        <div className="mood-search-suggestions">
+          {AI_SEARCH_SUGGESTIONS.map((s, i) => (
+            <button key={i} className="mood-suggestion-chip" onClick={() => handleSuggestion(s)}>
+              <span>{s.icon}</span>
+              <span>{s.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {isLoading && (
+        <div className="mood-search-loading">
+          <span className="mood-loading-dot" />
+          <span className="mood-loading-dot" />
+          <span className="mood-loading-dot" />
+        </div>
+      )}
+
+      {results && (
+        <div className="mood-search-results">
+          <p className="mood-results-label">{results.message}</p>
+          <div className="mood-results-clips">
+            {results.clips.map((clip, i) => (
+              <button
+                key={i}
+                className="mood-result-item"
+                onClick={() => onVideoSelect && onVideoSelect({ video_file: clip.video_file, display_title: clip.title, title: clip.title, speaker: clip.speaker })}
+              >
+                <div className="mood-result-thumb">
+                  <Play size={10} fill="white" />
+                </div>
+                <div className="mood-result-info">
+                  <span className="mood-result-title">{clip.title}</span>
+                  <span className="mood-result-meta">{clip.speaker} · {clip.duration}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+          <button className="mood-results-clear" onClick={() => { setResults(null); setQuery(''); }}>
+            Neue Suche
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DailyReflection({ reflection }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div className="daily-reflection">
+      <div className="daily-reflection-header">
+        <Sparkles size={13} className="reflection-icon" />
+        <span className="reflection-label">KI-Reflexion zum Vers</span>
+      </div>
+      <p className={`reflection-text ${expanded ? 'expanded' : ''}`}>
+        {reflection.text}
+      </p>
+      {!expanded && (
+        <button className="reflection-expand" onClick={() => setExpanded(true)}>
+          Mehr lesen <ChevronRight size={12} />
+        </button>
+      )}
+    </div>
+  );
+}
 
 function VerseOfDay({ verse, onBibleOpen }) {
   return (
@@ -151,6 +335,76 @@ function SermonCard({ sermon, onPlay }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function ActivePlanCard({ plan, onContinue }) {
+  const progress = Math.round((plan.day / plan.total) * 100);
+  return (
+    <div className="active-plan-card" style={{ '--plan-color': plan.color }}>
+      <div className="active-plan-top">
+        <div className="active-plan-meta">
+          <BookMarked size={14} className="active-plan-icon" />
+          <span className="active-plan-name">{plan.title}</span>
+        </div>
+        <span className="active-plan-day">Tag {plan.day} / {plan.total}</span>
+      </div>
+      <div className="active-plan-progress-bar">
+        <div className="active-plan-progress-fill" style={{ width: `${progress}%` }} />
+      </div>
+      <div className="active-plan-bottom">
+        <div className="active-plan-today">
+          {plan.todayDone ? (
+            <CheckCircle2 size={15} className="plan-check-done" />
+          ) : (
+            <Circle size={15} className="plan-check-todo" />
+          )}
+          <span className="active-plan-ref">Heute: {plan.todayRef}</span>
+        </div>
+        <button className="active-plan-btn" onClick={onContinue}>
+          {plan.todayDone ? 'Wiederholen' : 'Weiterlesen'}
+          <ChevronRight size={13} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function PlanCatalogCard({ plan }) {
+  return (
+    <div className="plan-catalog-card" style={{ '--plan-color': plan.color }}>
+      <div className="plan-catalog-icon">{plan.icon}</div>
+      <div className="plan-catalog-info">
+        <p className="plan-catalog-title">{plan.title}</p>
+        <p className="plan-catalog-subtitle">{plan.subtitle}</p>
+      </div>
+      <div className="plan-catalog-right">
+        <span className="plan-catalog-duration">{plan.duration}</span>
+        <ChevronRight size={14} className="plan-catalog-chevron" />
+      </div>
+    </div>
+  );
+}
+
+function ReadingPlansSection({ plans, onBibleOpen }) {
+  return (
+    <section className="home-section">
+      <div className="topic-row-header">
+        <div className="topic-row-label" style={{ '--topic-color': '#3b82f6' }}>
+          <BookMarked size={15} />
+          <span>Lesepläne</span>
+        </div>
+        <button className="topic-row-more">
+          Alle Pläne <ArrowRight size={13} />
+        </button>
+      </div>
+      <ActivePlanCard plan={plans.active} onContinue={onBibleOpen} />
+      <div className="plan-catalog-list">
+        {plans.catalog.map(plan => (
+          <PlanCatalogCard key={plan.id} plan={plan} />
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -241,9 +495,26 @@ function SpeakerSection({ speakers }) {
   );
 }
 
-// ── Main HomeScreen ─────────────────────────────────────────────────────────
+function AudioTeaser({ onAudioOpen }) {
+  return (
+    <div className="audio-teaser" onClick={onAudioOpen}>
+      <div className="audio-teaser-icon">
+        <Headphones size={22} />
+      </div>
+      <div className="audio-teaser-info">
+        <p className="audio-teaser-title">Hörbibel</p>
+        <p className="audio-teaser-sub">Genesis 1 · Lutherbibel 2017</p>
+      </div>
+      <div className="audio-teaser-play">
+        <Play size={16} fill="currentColor" />
+      </div>
+    </div>
+  );
+}
 
-function HomeScreen({ onBibleOpen, onVideoSelect }) {
+// ── Main HomeScreen ──────────────────────────────────────────────────────────
+
+function HomeScreen({ onBibleOpen, onVideoSelect, onAudioOpen }) {
   const [greeting] = useState(() => {
     const h = new Date().getHours();
     if (h < 12) return 'Guten Morgen';
@@ -262,11 +533,19 @@ function HomeScreen({ onBibleOpen, onVideoSelect }) {
       {/* Greeting */}
       <div className="home-greeting">
         <h2>{greeting}</h2>
-        <p>Was bewegt dich heute?</p>
       </div>
+
+      {/* AI Mood Search */}
+      <MoodSearch onVideoSelect={onVideoSelect} />
 
       {/* Verse of the day */}
       <VerseOfDay verse={VERSE_OF_DAY} onBibleOpen={onBibleOpen} />
+
+      {/* Daily AI Reflection */}
+      <DailyReflection reflection={DAILY_REFLECTION} />
+
+      {/* Audio Teaser */}
+      <AudioTeaser onAudioOpen={onAudioOpen} />
 
       {/* Sermon of the day */}
       <section className="home-section">
@@ -278,6 +557,9 @@ function HomeScreen({ onBibleOpen, onVideoSelect }) {
         </div>
         <SermonCard sermon={SERMON_OF_DAY} onPlay={handleClipPlay} />
       </section>
+
+      {/* Reading Plans */}
+      <ReadingPlansSection plans={READING_PLANS} onBibleOpen={onBibleOpen} />
 
       {/* Topic rows */}
       {TOPIC_ROWS.map(row => (
