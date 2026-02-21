@@ -22,7 +22,7 @@ function App() {
   const [studyData, setStudyData] = useState(null);
   const [selectedVerse, setSelectedVerse] = useState('Genesis 1:1');
   const [selectedVerseText, setSelectedVerseText] = useState(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(true);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [currentVideo, setCurrentVideo] = useState(null);
   const [currentTimestamp, setCurrentTimestamp] = useState(0);
   const [currentClipEnd, setCurrentClipEnd] = useState(null);
