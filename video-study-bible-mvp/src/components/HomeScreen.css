@@ -9,6 +9,110 @@
   width: 100%;
 }
 
+/* ── Kirchenjahr Banner ── */
+.kirchenjahr-banner {
+  display: flex;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--bg-elevated);
+  border: 1px solid var(--bg-border);
+}
+
+.kirchenjahr-season-bar {
+  width: 5px;
+  flex-shrink: 0;
+  background: var(--kj-color);
+}
+
+.kirchenjahr-body {
+  flex: 1;
+  padding: 1rem 1rem 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.kirchenjahr-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.15rem;
+}
+
+.kirchenjahr-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--kj-color-hell);
+}
+
+.kirchenjahr-datum {
+  font-size: 0.72rem;
+  color: var(--text-disabled);
+}
+
+.kirchenjahr-sonntag {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.kirchenjahr-thema {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.kirchenjahr-wochenspruch {
+  margin-top: 0.35rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(46, 125, 50, 0.1);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.kirchenjahr-wochenspruch-text {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  font-style: italic;
+}
+
+.kirchenjahr-wochenspruch-ref {
+  font-size: 0.7rem;
+  color: var(--text-disabled);
+  font-style: normal;
+  font-weight: 500;
+}
+
+.kirchenjahr-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--kj-color-hell);
+  font-size: 0.78rem;
+  font-weight: 500;
+  font-family: var(--font-ui);
+  width: fit-content;
+  transition: opacity 0.15s;
+}
+
+.kirchenjahr-cta:hover {
+  opacity: 0.75;
+}
+
 /* ── Greeting ── */
 .home-greeting {
   padding: 0.5rem 0 0;

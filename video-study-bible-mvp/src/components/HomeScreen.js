@@ -1,8 +1,24 @@
 import React, { useState, useRef } from 'react';
-import { Play, BookOpen, ChevronRight, Flame, Heart, Anchor, Sunrise, Users, Leaf, Star, ArrowRight, Sparkles, Send, BookMarked, CheckCircle2, Circle, Headphones } from 'lucide-react';
+import { Play, BookOpen, ChevronRight, Flame, Heart, Anchor, Sunrise, Users, Leaf, Star, ArrowRight, Sparkles, Send, BookMarked, CheckCircle2, Circle, Headphones, CalendarDays } from 'lucide-react';
 import './HomeScreen.css';
 
 // ── Simulated data ───────────────────────────────────────────────────────────
+
+// ── Kirchenjahr ──────────────────────────────────────────────────────────────
+// Manually curated for the current liturgical season.
+// In a real app this would be fetched from a Kirchenjahr API.
+const KIRCHENJAHR = {
+  sonntag: '7. Sonntag nach Epiphanias',
+  datum: '22. Februar 2026',
+  saison: 'Epiphanias',
+  farbe: '#2e7d32',        // liturgisches Grün
+  farbeHell: '#43a047',
+  predigttext: 'Lukas 6,27–38',
+  predigttextKurz: 'Lk 6,27–38',
+  thema: 'Liebet eure Feinde',
+  wochenspruch: 'Seid barmherzig, wie auch euer Vater barmherzig ist.',
+  wochenspruchRef: 'Lukas 6,36',
+};
 
 const VERSE_OF_DAY = {
   ref: 'Jeremia 29:11',
@@ -168,6 +184,34 @@ const AI_SEARCH_SUGGESTIONS = [
 ];
 
 // ── Sub-components ──────────────────────────────────────────────────────────
+
+function KirchenjahrBanner({ kj, onBibleOpen }) {
+  return (
+    <div className="kirchenjahr-banner" style={{ '--kj-color': kj.farbe, '--kj-color-hell': kj.farbeHell }}>
+      <div className="kirchenjahr-season-bar" />
+      <div className="kirchenjahr-body">
+        <div className="kirchenjahr-top">
+          <div className="kirchenjahr-label">
+            <CalendarDays size={12} />
+            <span>Kirchenjahr</span>
+          </div>
+          <span className="kirchenjahr-datum">{kj.datum}</span>
+        </div>
+        <p className="kirchenjahr-sonntag">{kj.sonntag}</p>
+        <p className="kirchenjahr-thema">{kj.thema}</p>
+        <div className="kirchenjahr-wochenspruch">
+          <span className="kirchenjahr-wochenspruch-text">„{kj.wochenspruch}"</span>
+          <span className="kirchenjahr-wochenspruch-ref">{kj.wochenspruchRef}</span>
+        </div>
+        <button className="kirchenjahr-cta" onClick={onBibleOpen}>
+          <BookOpen size={12} />
+          Predigttext: {kj.predigttextKurz}
+          <ChevronRight size={12} />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function MoodSearch({ onVideoSelect }) {
   const [query, setQuery] = useState('');
@@ -534,6 +578,9 @@ function HomeScreen({ onBibleOpen, onVideoSelect, onAudioOpen }) {
       <div className="home-greeting">
         <h2>{greeting}</h2>
       </div>
+
+      {/* Kirchenjahr */}
+      <KirchenjahrBanner kj={KIRCHENJAHR} onBibleOpen={onBibleOpen} />
 
       {/* AI Mood Search */}
       <MoodSearch onVideoSelect={onVideoSelect} />
