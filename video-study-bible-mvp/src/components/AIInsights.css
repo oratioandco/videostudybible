@@ -125,18 +125,10 @@
 /* ── Speaker chips ── */
 .speaker-chips {
   display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
+  flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 8px;
   flex-shrink: 0;
-  padding-bottom: 4px;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-.speaker-chips::-webkit-scrollbar {
-  display: none;
 }
 
 .speaker-chip {
@@ -152,6 +144,10 @@
   background: var(--bg-surface);
   color: var(--text-muted);
   transition: all 0.15s;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .speaker-chip:hover {
