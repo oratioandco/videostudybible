@@ -30,6 +30,62 @@ def clean_title(title: str) -> str:
     return t.strip()
 
 
+# Known German churches/organizations and their display names
+KNOWN_ORGS = {
+    'Christengemeinde Elim': 'Christengemeinde Elim',
+    'Elim Hamburg': 'Christengemeinde Elim',
+    'ICF': 'ICF Church',
+    'ICF Conference': 'ICF Church',
+    'Bibelkunde': 'Bibelkunde',
+    'Glaubenskunde': 'Glaubenskunde',
+    'BibelTV': 'BibelTV',
+    'Labora': 'Labora',
+    'Kingdom Come': 'Kingdom Come',
+}
+
+def extract_speaker_info(segments: list, ai_summary: str = '') -> dict:
+    """
+    Extract speaker/organization info from transcript segments and ai_summary.
+
+    Returns: {'speaker': str, 'organization': str, 'speaker_avatar': str}
+    """
+    result = {'speaker': None, 'organization': None, 'speaker_avatar': None}
+
+    # Check first 5 segments for organization patterns
+    first_text = ' '.join(s.get('text', '') for s in segments[:5] if s.get('text'))
+
+    # Look for known organizations in first segments
+    for org_key, org_name in KNOWN_ORGS.items():
+        if org_key.lower() in first_text.lower():
+            result['organization'] = org_name
+            result['speaker'] = org_name  # Use org as speaker if no individual speaker found
+            break
+
+    # Try to extract from ai_summary if no org found
+    if not result['speaker'] and ai_summary:
+        # Look for "stammt aus der X" or "der Sprecher" patterns
+        org_match = re.search(r'stammt aus (?:der\s+)?([A-Za-zäöüÄÖÜß\s]+)', ai_summary)
+        if org_match:
+            org_text = org_match.group(1).strip()
+            # Clean up common patterns
+            for org_key, org_name in KNOWN_ORGS.items():
+                if org_key.lower() in org_text.lower():
+                    result['organization'] = org_name
+                    result['speaker'] = org_name
+                    break
+
+    # Extract from video title if still no speaker
+    # (Some videos have speaker name in title like "Bibelkunde" or "Glaubenskunde")
+    if not result['speaker']:
+        for org_key, org_name in KNOWN_ORGS.items():
+            if org_key.lower() in first_text.lower():
+                result['organization'] = org_name
+                result['speaker'] = org_name
+                break
+
+    return result
+
+
 READING_PHRASES = [
     'schlagen sie auf', 'schlag auf', 'liest:', 'lesen wir:',
     'ich lese', 'wir lesen jetzt', 'steht geschrieben:', 'der text lautet',
@@ -90,6 +146,10 @@ def rebuild_database(data_dir: Path) -> dict:
                 except Exception:
                     pass
 
+            # Extract speaker/organization info from transcript and summary
+            segments = data.get('segments', [])
+            speaker_info = extract_speaker_info(segments, ai_summary)
+
             # verse_sections: {verse_ref: [section, ...]}
             # Each section: {timestamp, verse_reference, category, quality, content}
             verse_sections = data.get('verse_sections', {})
@@ -123,6 +183,8 @@ def rebuild_database(data_dir: Path) -> dict:
                     'video_file': video_file,
                     'ai_summary': ai_summary or '',
                     'thumb': thumb,
+                    'speaker': speaker_info.get('speaker'),
+                    'organization': speaker_info.get('organization'),
                     'mentions': mentions,
                 }
 
@@ -145,6 +207,11 @@ def rebuild_database(data_dir: Path) -> dict:
             crn_match = re.search(r'_(\d{5,})(?:\.mp4)?$', video_id or title or '')
             thumb = f"https://bibeltv.imgix.net/{crn_match.group(1)}.jpg" if crn_match else None
 
+            # Extract speaker info from enhanced file
+            ai_summary = data.get('ai_summary', '')
+            segments = data.get('segments', [])
+            speaker_info = extract_speaker_info(segments, ai_summary)
+
             for verse_ref, mentions in data.get('verse_mentions', {}).items():
                 quality_mentions = []
                 for mention in mentions:
@@ -166,8 +233,10 @@ def rebuild_database(data_dir: Path) -> dict:
                     'title': title,
                     'display_title': clean_title(title),
                     'video_file': video_file,
-                    'ai_summary': data.get('ai_summary', ''),
+                    'ai_summary': ai_summary,
                     'thumb': thumb,
+                    'speaker': speaker_info.get('speaker'),
+                    'organization': speaker_info.get('organization'),
                     'mentions': quality_mentions,
                 }
                 if 'Genesis 1' in verse_ref or '1. Mose 1' in verse_ref:
@@ -203,7 +272,8 @@ def get_teaching_block(segments: list, timestamp: str, after: int = 60) -> list:
 
 
 def synthesize_verse_commentary(verse_ref: str, all_video_data: list,
-                                 client: anthropic.Anthropic) -> dict:
+                                 client: anthropic.Anthropic,
+                                 verse_video_entries: list = None) -> dict:
     """
     Synthesize commentary for a verse from ALL videos that discuss it.
 
@@ -212,13 +282,41 @@ def synthesize_verse_commentary(verse_ref: str, all_video_data: list,
     combine insights across sources.
 
     Fallback: raw transcript segment extraction from *_enhanced.json.
+
+    verse_video_entries: List of video entries from db['verses']['genesis1'][verse_ref]
+                         containing thumb, speaker, mentions with timestamps, etc.
     """
 
     all_passages = []
+    # Build metadata lookup: short_key -> {video_id, thumb, speaker, speaker_avatar, timestamp_ms}
+    source_metadata = {}
 
     for video_data in all_video_data:
         title = video_data.get('title', '')
         short_key = clean_title(title)
+
+        # Build metadata for this video source
+        video_id = video_data.get('video_id', '')
+        crn_match = re.search(r'_(\d{5,})(?:\.mp4)?$', video_id or title or '')
+        thumb = f"https://bibeltv.imgix.net/{crn_match.group(1)}.jpg" if crn_match else None
+
+        # Get timestamp from the first mention for this verse
+        timestamp_ms = None
+        if verse_video_entries:
+            for entry in verse_video_entries:
+                if clean_title(entry.get('title', '')) == short_key:
+                    mentions = entry.get('mentions', [])
+                    if mentions:
+                        timestamp_ms = mentions[0].get('timestamp_ms') or mentions[0].get('clip_start_ms')
+                    break
+
+        source_metadata[short_key] = {
+            'video_id': video_id,
+            'thumb': thumb,
+            'speaker': video_data.get('speaker'),
+            'speaker_avatar': video_data.get('speaker_avatar'),
+            'timestamp_ms': timestamp_ms,
+        }
 
         # --- Primary: AI-parsed sections ---
         verse_sections = video_data.get('verse_sections', {}).get(verse_ref, [])
@@ -353,7 +451,6 @@ Alles auf Deutsch. Nur gültiges JSON."""
             result = json.loads(response_text)
         except json.JSONDecodeError:
             # Try to extract JSON object even if trailing content exists
-            import re
             match = re.search(r'\{.*\}', response_text, re.DOTALL)
             if match:
                 try:
@@ -364,6 +461,20 @@ Alles auf Deutsch. Nur gültiges JSON."""
                 return {}
 
         result['source_videos'] = [clean_title(s['video_title']) for s in all_passages]
+
+        # Enrich each category item with video metadata for UI rendering
+        if 'categories' in result:
+            for cat_key, items in result['categories'].items():
+                for item in items:
+                    source = item.get('source', '')
+                    if source in source_metadata:
+                        meta = source_metadata[source]
+                        item['video_id'] = meta.get('video_id')
+                        item['thumb'] = meta.get('thumb')
+                        item['speaker'] = meta.get('speaker')
+                        item['speaker_avatar'] = meta.get('speaker_avatar')
+                        item['timestamp_ms'] = meta.get('timestamp_ms')
+
         return result
 
     except Exception as e:
@@ -413,7 +524,7 @@ def synthesize_all_verses(db: dict, data_dir: Path, client: anthropic.Anthropic)
         n = len(videos)
         print(f"   🔎 {verse_ref} ({n} video{'s' if n > 1 else ''})...", end=' ')
 
-        commentary = synthesize_verse_commentary(verse_ref, all_video_data, client)
+        commentary = synthesize_verse_commentary(verse_ref, all_video_data, client, videos)
 
         if commentary:
             verse_commentaries[verse_ref] = commentary

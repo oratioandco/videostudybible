@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Send, MessageCircle, Trash2 } from 'lucide-react';
+import { Send, MessageCircle, Trash2, BookmarkPlus } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import './AIInsights.css';
 
@@ -58,7 +58,7 @@ function getExampleQuestions(speakerFilter, verse) {
   ];
 }
 
-function AIInsights({ verse, studyData }) {
+function AIInsights({ verse, studyData, onSaveAsNote }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -78,17 +78,20 @@ function AIInsights({ verse, studyData }) {
     setError('');
   }, [verse, speakerFilter]);
 
-  // Collect unique speakers with avatars from the whole dataset
+  // Collect unique speakers with thumbnails from verse data (only actual people, not series/org names)
   const speakers = useMemo(() => {
-    const g1 = studyData?.verses?.genesis1 || {};
+    const genesis1 = studyData?.verses?.genesis1 || {};
     const map = {};
-    Object.values(g1).forEach(videos =>
+    // Series/organization names to exclude (these aren't actual speakers)
+    const excludeNames = ['Bibelkunde', 'Glaubenskunde', 'Christengemeinde Elim'];
+    Object.values(genesis1).forEach(videos => {
       videos.forEach(v => {
-        if (v.speaker && !map[v.speaker]) {
-          map[v.speaker] = v.speaker_avatar || null;
+        // Only include if speaker field is set and not a series/org name
+        if (v.speaker && !excludeNames.includes(v.speaker) && !map[v.speaker]) {
+          map[v.speaker] = v.thumb || null;
         }
-      })
-    );
+      });
+    });
     return Object.entries(map).sort(([a], [b]) => a.localeCompare(b));
   }, [studyData]);
 
@@ -237,6 +240,16 @@ function AIInsights({ verse, studyData }) {
                     ? <ReactMarkdown>{msg.content}</ReactMarkdown>
                     : msg.content}
                 </div>
+                {msg.role === 'assistant' && onSaveAsNote && (
+                  <button
+                    className="save-as-note-btn"
+                    onClick={() => onSaveAsNote(verse, msg.content)}
+                    title="Als Notiz speichern"
+                  >
+                    <BookmarkPlus size={12} />
+                    <span>Als Notiz</span>
+                  </button>
+                )}
               </div>
             ))}
 

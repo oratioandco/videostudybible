@@ -567,6 +567,11 @@
     display: none;
   }
 
+  /* ── Desktop: Detail panel on LEFT of Bible column ── */
+  .verse-detail-panel.is-open {
+    order: ; /* Place before bible-column */
+  }
+
 }
 
 @media (min-width: 1200px) {

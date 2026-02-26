@@ -209,7 +209,7 @@
   }
 }
 
-/* ── Desktop: full 3-column ── */
+/* ── Desktop: full 4-column layout ── */
 @media (min-width: 1200px) {
   .main-container {
     padding: 1.5rem 2rem 2rem;
@@ -232,7 +232,12 @@
     max-height: calc(100vh - 80px);
   }
 
-  /* Bible column: uncapped, fills middle */
+  /* Detail panel: LEFT of bible column */
+  .verse-detail-panel.is-open {
+    order: -1; /* Place before bible-column */
+  }
+
+  /* Bible column: uncapped, fills remaining space */
   .bible-column {
     flex: 1;
     min-width: 0;

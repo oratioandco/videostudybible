@@ -1,44 +1,14 @@
 import React from 'react';
-import { BookOpen, Languages, History, Lightbulb, Heart, BookMarked } from 'lucide-react';
+import { BookOpen, Languages, History, Lightbulb, Heart, BookMarked, Play } from 'lucide-react';
 import './Commentary.css';
 
 const CATEGORY_CONFIG = {
-  textanalyse: {
-    label: 'Textanalyse',
-    icon: Languages,
-    description: 'Wortbedeutungen, Sprache, Struktur',
-    color: '#3b82f6'
-  },
-  historisch_kulturell: {
-    label: 'Historisch & Kulturell',
-    icon: History,
-    description: 'Hintergrund, Zeitkontext',
-    color: '#8b5cf6'
-  },
-  theologisch: {
-    label: 'Theologische Einsichten',
-    icon: Lightbulb,
-    description: 'Lehraussagen & Glaubensinhalte',
-    color: '#f59e0b'
-  },
-  christologisch: {
-    label: 'Christologische Perspektive',
-    icon: BookMarked,
-    description: 'Verbindung zu Jesus & NT',
-    color: '#10b981'
-  },
-  anwendung: {
-    label: 'Lebensanwendung',
-    icon: Heart,
-    description: 'Praktisch & persönlich',
-    color: '#ef4444'
-  },
-  illustrationen: {
-    label: 'Illustrationen & Geschichten',
-    icon: BookOpen,
-    description: 'Bilder, Analogien, Erlebnisse',
-    color: '#6366f1'
-  }
+  textanalyse: { label: 'Textanalyse', icon: Languages, description: 'Wortbedeutungen, Sprache, Struktur', color: '#3b82f6' },
+  historisch_kulturell: { label: 'Historisch & Kulturell', icon: History, description: 'Hintergrund, Zeitkontext', color: '#8b5cf6' },
+  theologisch: { label: 'Theologische Einsichten', icon: Lightbulb, description: 'Lehraussagen & Glaubensinhalte', color: '#f59e0b' },
+  christologisch: { label: 'Christologische Perspektive', icon: BookMarked, description: 'Verbindung zu Jesus & NT', color: '#10b981' },
+  anwendung: { label: 'Lebensanwendung', icon: Heart, description: 'Praktisch & persönlich', color: '#ef4444' },
+  illustrationen: { label: 'Illustrationen & Geschichten', icon: BookOpen, description: 'Bilder, Analogien, Erlebnisse', color: '#6366f1' }
 };
 
 function mergeCommentaries(a, b) {
@@ -60,8 +30,15 @@ function mergeCommentaries(a, b) {
   };
 }
 
+function formatTimestamp(ms) {
+  if (!ms) return '';
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+
 function Commentary({ verse, studyData, onTimestampClick, onVideoSelect }) {
-  // Look up commentary under both "Genesis X:Y" and "1. Mose X:Y" key variants
   const vc = studyData?.verse_commentaries || {};
   const altVerse = verse.replace(/^Genesis (\d+):(\d+)$/, '1. Mose $1:$2');
   const primary = vc[verse] || null;
@@ -85,9 +62,7 @@ function Commentary({ verse, studyData, onTimestampClick, onVideoSelect }) {
       <div className="commentary-header">
         <h3>Was unsere Partner sagen zu {verse}</h3>
         {synthesized.source_count > 0 && (
-          <span className="source-badge">
-            {synthesized.source_count} Videos
-          </span>
+          <span className="source-badge">{synthesized.source_count} Videos</span>
         )}
       </div>
 
@@ -107,17 +82,75 @@ function Commentary({ verse, studyData, onTimestampClick, onVideoSelect }) {
                 <div className="category-header">
                   <Icon size={16} />
                   <h4>{config.label}</h4>
-                  <span className="category-desc">{config.description}</span>
+                  {items.length > 1 && <span className="category-count">{items.length}</span>}
                 </div>
+
                 <ul className="category-items">
-                  {items.map((item, idx) => (
-                    <li key={idx}>
-                      <span className="item-text">{item.text}</span>
-                      {item.source && (
-                        <span className="item-source">{item.source}</span>
-                      )}
-                    </li>
-                  ))}
+                  {items.map((item, idx) => {
+                    const displayName = item.speaker || item.source || 'Videoquelle';
+                    const initials = displayName
+                      .split(' ')
+                      .map(w => w[0])
+                      .join('')
+                      .slice(0, 2)
+                      .toUpperCase() || '?';
+
+                    const timestamp = formatTimestamp(item.timestamp_ms);
+
+                    return (
+                      <li key={idx} className="insight-card">
+                        <div className="quote-card">
+                          {/* Header: Avatar + Name */}
+                          <div className="insight-card-header">
+                            <div
+                              className="speaker-avatar-placeholder"
+                              style={{ backgroundColor: config.color, color: '#fff' }}
+                            >
+                              {initials}
+                            </div>
+                            <div className="speaker-meta">
+                              <span className="speaker-name">{displayName}</span>
+                              <span className="speaker-role">{config.label}</span>
+                            </div>
+                          </div>
+
+                          {/* Quote text */}
+                          <div className="insight-text">
+                            <p className="item-text">{item.text}</p>
+                          </div>
+
+                          {/* Verse reference */}
+                          <div className="verse-ref">{verse}</div>
+
+                          {/* Watch section */}
+                          <div className="watch-section">
+                            <button
+                              className="watch-link"
+                              onClick={() => {
+                                const videoEntry = {
+                                  video_id: item.video_id,
+                                  title: item.source,
+                                  display_title: item.source,
+                                  thumb: item.thumb,
+                                  speaker: item.speaker,
+                                  speaker_avatar: item.speaker_avatar,
+                                };
+                                onVideoSelect(videoEntry);
+                                if (item.timestamp_ms) {
+                                  onTimestampClick(item.timestamp_ms / 1000);
+                                }
+                              }}
+                              title="Diesen Moment im Video ansehen"
+                            >
+                              <Play size={14} strokeWidth={2} />
+                              <span className="watch-link-text">Video ansehen</span>
+                              {timestamp && <span className="watch-link-time">{timestamp}</span>}
+                            </button>
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             );

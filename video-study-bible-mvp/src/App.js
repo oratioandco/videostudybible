@@ -3,6 +3,7 @@ import './App.css';
 import BibleViewer, { TranslationSwitcher } from './components/BibleViewer';
 import VideoPlayer from './components/VideoPlayer';
 import VerseDetailPanel from './components/VerseDetailPanel';
+import NotesChatPanel from './components/NotesChatPanel';
 import HomeScreen from './components/HomeScreen';
 import AudioBible from './components/AudioBible';
 import { Book, Play, Sun, Moon, BookOpen, BookText, Home, Headphones } from 'lucide-react';
@@ -52,6 +53,7 @@ function App() {
     ],
   });
   const [page, setPage] = useState('home'); // 'home' | 'bible' | 'audio'
+  const [isNotesPanelOpen, setIsNotesPanelOpen] = useState(false);
   const sessionUUIDRef = useRef(null);
   const homeContainerRef = useRef(null);
 
@@ -132,10 +134,23 @@ function App() {
     setSelectedVerse(verse);
     setSelectedVerseText(verseText || null);
     setIsDetailOpen(true);
+    // Auto-open notes panel on desktop (≥1200px)
+    if (window.innerWidth >= 1200) {
+      setIsNotesPanelOpen(true);
+    }
   };
 
   const handleCloseDetail = () => {
     setIsDetailOpen(false);
+    setIsNotesPanelOpen(false);
+  };
+
+  const handleOpenNotesPanel = () => {
+    setIsNotesPanelOpen(true);
+  };
+
+  const handleCloseNotesPanel = () => {
+    setIsNotesPanelOpen(false);
   };
 
   const handleVideoSelect = (video, timestamp = 0, endTime = null) => {
@@ -170,6 +185,15 @@ function App() {
       ...prev,
       [verseRef]: (prev[verseRef] || []).filter(n => n.id !== noteId),
     }));
+  };
+
+  const handleSaveChatAsNote = (verseRef, content) => {
+    if (!content || !verseRef) return;
+    handleAddNote(verseRef, {
+      id: Date.now().toString(),
+      text: `[Aus KI-Chat] ${content}`,
+      createdAt: new Date().toISOString(),
+    });
   };
 
   if (loading) {
@@ -328,9 +352,21 @@ function App() {
           onVerseSelect={handleVerseSelect}
           highlights={highlights}
           onHighlight={handleHighlight}
+          onOpenNotesPanel={handleOpenNotesPanel}
+        />
+
+        {/* Far right col: Notes/Chat panel (desktop only) */}
+        <NotesChatPanel
+          isOpen={isNotesPanelOpen && isDetailOpen}
+          verseRef={selectedVerse}
+          studyData={studyData}
+          onClose={handleCloseNotesPanel}
+          highlights={highlights}
+          onHighlight={handleHighlight}
           notes={notes}
           onAddNote={handleAddNote}
           onDeleteNote={handleDeleteNote}
+          onSaveChatAsNote={handleSaveChatAsNote}
         />
       </div>}
 
