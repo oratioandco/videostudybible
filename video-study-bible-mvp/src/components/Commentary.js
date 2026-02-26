@@ -45,6 +45,17 @@ function Commentary({ verse, studyData, onTimestampClick, onVideoSelect }) {
   const alt = (verse !== altVerse ? vc[altVerse] : null) || null;
   const synthesized = mergeCommentaries(primary, alt);
 
+  // Build lookup for speaker info from raw video data
+  const videoSpeakerMap = {};
+  const genesis1 = studyData?.verses?.genesis1 || {};
+  Object.values(genesis1).forEach(videos => {
+    videos.forEach(v => {
+      if (v.video_id && v.speaker) {
+        videoSpeakerMap[v.video_id] = v.speaker;
+      }
+    });
+  });
+
   if (!synthesized) {
     return (
       <div className="commentary empty">
@@ -87,7 +98,9 @@ function Commentary({ verse, studyData, onTimestampClick, onVideoSelect }) {
 
                 <ul className="category-items">
                   {items.map((item, idx) => {
-                    const displayName = item.speaker || item.source || 'Videoquelle';
+                    // Look up speaker from video data if not in commentary item
+                    const speakerName = item.speaker || videoSpeakerMap[item.video_id] || null;
+                    const displayName = speakerName || item.source || 'Videoquelle';
                     const initials = displayName
                       .split(' ')
                       .map(w => w[0])
@@ -132,7 +145,7 @@ function Commentary({ verse, studyData, onTimestampClick, onVideoSelect }) {
                                   title: item.source,
                                   display_title: item.source,
                                   thumb: item.thumb,
-                                  speaker: item.speaker,
+                                  speaker: speakerName,
                                   speaker_avatar: item.speaker_avatar,
                                 };
                                 onVideoSelect(videoEntry);
