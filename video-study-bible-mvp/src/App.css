@@ -235,6 +235,14 @@
     overflow: hidden;
   }
 
+  /* Collapse left column when no video and no detail panel open */
+  .left-column:not(.has-video):not(:has(.verse-detail-panel.is-open)) {
+    width: 0;
+    padding: 0;
+    gap: 0;
+    overflow: visible;
+  }
+
   /* Video player wrapper: shown when video is active */
   .left-column .video-player-wrapper {
     display: block;
