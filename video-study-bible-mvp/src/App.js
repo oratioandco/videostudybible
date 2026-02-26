@@ -313,17 +313,32 @@ function App() {
 
       {page === 'bible' && <div className="main-container">
 
-        {/* Left col: video player (desktop only — collapses when no video) */}
-        <div className={`video-column ${currentVideo ? 'has-video' : ''}`}>
-          {currentVideo ? (
-            <VideoPlayer
-              video={currentVideo}
-              timestamp={currentTimestamp}
-              endTime={currentClipEnd}
-              onTimestampChange={setCurrentTimestamp}
-              onClose={handleCloseVideo}
-            />
-          ) : null}
+        {/* Left col: Video player (when active) + Detail panel stacked vertically */}
+        <div className={`left-column ${currentVideo ? 'has-video' : ''}`}>
+          {currentVideo && (
+            <div className="video-player-wrapper">
+              <VideoPlayer
+                video={currentVideo}
+                timestamp={currentTimestamp}
+                endTime={currentClipEnd}
+                onTimestampChange={setCurrentTimestamp}
+                onClose={handleCloseVideo}
+              />
+            </div>
+          )}
+          <VerseDetailPanel
+            isOpen={isDetailOpen}
+            verseRef={selectedVerse}
+            verseText={selectedVerseText}
+            studyData={studyData}
+            onClose={handleCloseDetail}
+            onVideoSelect={handleVideoSelect}
+            onTimestampClick={handleTimestampClick}
+            onVerseSelect={handleVerseSelect}
+            highlights={highlights}
+            onHighlight={handleHighlight}
+            onOpenNotesPanel={handleOpenNotesPanel}
+          />
         </div>
 
         {/* Center col: Bible reader */}
@@ -339,21 +354,6 @@ function App() {
             notes={notes}
           />
         </div>
-
-        {/* Right col: Verse detail panel (bottom sheet on mobile, sidebar on desktop) */}
-        <VerseDetailPanel
-          isOpen={isDetailOpen}
-          verseRef={selectedVerse}
-          verseText={selectedVerseText}
-          studyData={studyData}
-          onClose={handleCloseDetail}
-          onVideoSelect={handleVideoSelect}
-          onTimestampClick={handleTimestampClick}
-          onVerseSelect={handleVerseSelect}
-          highlights={highlights}
-          onHighlight={handleHighlight}
-          onOpenNotesPanel={handleOpenNotesPanel}
-        />
 
         {/* Far right col: Notes/Chat panel (desktop only) */}
         <NotesChatPanel

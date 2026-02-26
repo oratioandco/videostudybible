@@ -566,21 +566,21 @@
   .panel-verse-section {
     display: none;
   }
-
-  /* ── Desktop: Detail panel on LEFT of Bible column ── */
-  .verse-detail-panel.is-open {
-    order: ; /* Place before bible-column */
-  }
-
 }
 
+/* ── Desktop: panel inside left-column (stacked with video player) ── */
 @media (min-width: 1200px) {
-  .verse-detail-panel {
-    top: calc(56px + 1.5rem);
-    height: calc(100vh - 88px);
+  /* Reset positioning when inside left-column */
+  .left-column .verse-detail-panel {
+    position: relative;
+    top: auto;
+    height: auto;
+    flex: 1;
+    min-height: 0;
+    border-radius: 16px;
   }
 
-  .verse-detail-panel.is-open {
-    width: 480px;
+  .left-column .verse-detail-panel.is-open {
+    width: 100%;
   }
 }

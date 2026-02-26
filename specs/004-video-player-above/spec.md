@@ -48,8 +48,9 @@ As a user, I want smooth transitions when resizing the browser window so that th
 
 ### Functional Requirements
 
-- **FR-001**: System MUST display video player stacked above the detail panel (Commentary, Videos, Cross-refs, Topics tabs) on desktop screens (≥1200px)
-- **FR-002**: System MUST maintain the existing Notes/Chat panel on the right side of the screen
+- **FR-001**: System MUST display video player stacked above the detail panel (Commentary, Videos, Cross-refs, Topics tabs) on desktop screens (≥1200px) ONLY when a video is selected
+- **FR-002**: System MUST hide the video player area when no video is selected (collapses to show only detail panel)
+- **FR-003**: System MUST maintain the existing Notes/Chat panel on the right side of the screen
 - **FR-003**: System MUST preserve current mobile/tablet layout behavior (no stacking changes below 1200px)
 - **FR-004**: System MUST keep the video player visible when scrolling the detail panel content
 - **FR-005**: Video player MUST maintain its current functionality (play/pause, seek, fullscreen, etc.)

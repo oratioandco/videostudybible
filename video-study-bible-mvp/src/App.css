@@ -184,8 +184,13 @@
   width: 100%;
 }
 
-/* Video column — hidden on mobile, shown on desktop */
-.video-column {
+/* Left column — contains video player + detail panel (stacked on desktop) */
+.left-column {
+  display: contents; /* On mobile, children render as direct flex items */
+}
+
+/* Video player wrapper — only shown when video is active */
+.video-player-wrapper {
   display: none;
 }
 
@@ -209,7 +214,7 @@
   }
 }
 
-/* ── Desktop: full 4-column layout ── */
+/* ── Desktop: full 3-column layout with stacked left panel ── */
 @media (min-width: 1200px) {
   .main-container {
     padding: 1.5rem 2rem 2rem;
@@ -217,24 +222,38 @@
     justify-content: center;
   }
 
-  /* Video column: hidden by default, shown only when a video is active */
-  .video-column {
-    display: none;
-  }
-
-  .video-column.has-video {
+  /* Left column: stacks video player above detail panel */
+  .left-column {
     display: flex;
     flex-direction: column;
-    width: 340px;
+    width: 440px;
     flex-shrink: 0;
+    gap: 1rem;
+    max-height: calc(100vh - 80px);
     position: sticky;
     top: calc(56px + 1.5rem);
-    max-height: calc(100vh - 80px);
+    overflow: hidden;
   }
 
-  /* Detail panel: LEFT of bible column */
-  .verse-detail-panel.is-open {
-    order: -1; /* Place before bible-column */
+  /* Video player wrapper: shown when video is active */
+  .left-column .video-player-wrapper {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  /* When video is active, video player stays at top */
+  .left-column.has-video .video-player-wrapper {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg-primary);
+  }
+
+  /* Detail panel fills remaining space in left column */
+  .left-column .verse-detail-panel {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
   }
 
   /* Bible column: uncapped, fills remaining space */
