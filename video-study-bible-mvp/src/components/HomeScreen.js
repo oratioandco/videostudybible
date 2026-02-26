@@ -292,19 +292,34 @@ function MoodSearch({ onVideoSelect }) {
           <p className="mood-results-label">{results.message}</p>
           <div className="mood-results-clips">
             {results.clips.map((clip, i) => (
-              <button
+              <div
                 key={i}
-                className="mood-result-item"
+                className="mood-result-card"
                 onClick={() => onVideoSelect && onVideoSelect({ video_file: clip.video_file, display_title: clip.title, title: clip.title, speaker: clip.speaker })}
               >
                 <div className="mood-result-thumb">
-                  <Play size={10} fill="white" />
+                  <div className="mood-result-thumb-bg" />
+                  <div className="mood-result-play">
+                    <Play size={14} fill="white" />
+                  </div>
+                  <span className="mood-result-duration">{clip.duration}</span>
                 </div>
                 <div className="mood-result-info">
-                  <span className="mood-result-title">{clip.title}</span>
-                  <span className="mood-result-meta">{clip.speaker} · {clip.duration}</span>
+                  <p className="mood-result-title">{clip.title}</p>
+                  <div className="mood-result-meta">
+                    {clip.speaker_avatar && (
+                      <img
+                        src={clip.speaker_avatar}
+                        alt={clip.speaker}
+                        className="mood-result-avatar"
+                        onError={e => { e.target.style.display = 'none'; }}
+                      />
+                    )}
+                    <span className="mood-result-speaker">{clip.speaker || 'BibleTV'}</span>
+                    <span className="mood-result-verse">{clip.verse}</span>
+                  </div>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
           <button className="mood-results-clear" onClick={() => { setResults(null); setQuery(''); }}>
