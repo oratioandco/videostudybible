@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Languages, History, Lightbulb, Heart, BookMarked, Play } from 'lucide-react';
+import { BookOpen, Languages, History, Lightbulb, Heart, BookMarked, Play, User } from 'lucide-react';
 import './Commentary.css';
 
 const CATEGORY_CONFIG = {
@@ -101,12 +101,6 @@ function Commentary({ verse, studyData, onTimestampClick, onVideoSelect }) {
                     // Look up speaker from video data if not in commentary item
                     const speakerName = item.speaker || videoSpeakerMap[item.video_id] || null;
                     const displayName = speakerName || item.source || 'Videoquelle';
-                    const initials = displayName
-                      .split(' ')
-                      .map(w => w[0])
-                      .join('')
-                      .slice(0, 2)
-                      .toUpperCase() || '?';
 
                     const timestamp = formatTimestamp(item.timestamp_ms);
 
@@ -116,10 +110,14 @@ function Commentary({ verse, studyData, onTimestampClick, onVideoSelect }) {
                           {/* Header: Avatar + Name */}
                           <div className="insight-card-header">
                             <div
-                              className="speaker-avatar-placeholder"
+                              className={`speaker-avatar-placeholder ${item.speaker_avatar ? 'has-avatar' : ''}`}
                               style={{ backgroundColor: config.color, color: '#fff' }}
                             >
-                              {initials}
+                              {item.speaker_avatar ? (
+                                <img src={item.speaker_avatar} alt={displayName} />
+                              ) : (
+                                <User size={18} />
+                              )}
                             </div>
                             <div className="speaker-meta">
                               <span className="speaker-name">{displayName}</span>
