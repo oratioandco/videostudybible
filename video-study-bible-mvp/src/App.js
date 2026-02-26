@@ -18,7 +18,7 @@ function App() {
   });
   const [viewMode, setViewMode] = useState(() => {
     const saved = localStorage.getItem('vsb-view-mode');
-    return (saved === 'reading' || saved === 'study') ? saved : 'study';
+    return (saved === 'reading' || saved === 'study') ? saved : 'reading';
   });
   const [studyData, setStudyData] = useState(null);
   const [selectedVerse, setSelectedVerse] = useState('Genesis 1:1');

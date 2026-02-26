@@ -262,6 +262,11 @@
     min-width: 0;
     max-width: 680px;
   }
+
+  /* Center bible column when no panels are open */
+  .main-container:not(:has(.verse-detail-panel.is-open)):not(:has(.notes-chat-panel.is-open)) .bible-column {
+    margin: 0 auto;
+  }
 }
 
 /* Video placeholder (desktop, no video selected) */
